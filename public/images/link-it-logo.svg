@@ -1,0 +1,43 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 배경 원형 -->
+  <circle cx="30" cy="30" r="28" fill="url(#gradient1)" stroke="url(#gradient2)" stroke-width="2"/>
+  
+  <!-- 메인 아이콘 - 사람-기술-환경 연결 -->
+  <g transform="translate(15, 15)">
+    <!-- 중앙 연결점 -->
+    <circle cx="15" cy="15" r="6" fill="white" stroke="#2563eb" stroke-width="2"/>
+    
+    <!-- 사람 (상단) -->
+    <circle cx="15" cy="5" r="4" fill="#16a34a" opacity="0.9"/>
+    <text x="15" y="8" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white" text-anchor="middle">사</text>
+    
+    <!-- 기술 (우측) -->
+    <circle cx="25" cy="15" r="4" fill="#9333ea" opacity="0.9"/>
+    <text x="25" y="18" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white" text-anchor="middle">기</text>
+    
+    <!-- 환경 (하단) -->
+    <circle cx="15" cy="25" r="4" fill="#f59e0b" opacity="0.9"/>
+    <text x="15" y="28" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white" text-anchor="middle">환</text>
+    
+    <!-- 연결선들 -->
+    <line x1="15" y1="15" x2="15" y2="5" stroke="#2563eb" stroke-width="2" opacity="0.8"/>
+    <line x1="15" y1="15" x2="25" y2="15" stroke="#2563eb" stroke-width="2" opacity="0.8"/>
+    <line x1="15" y1="15" x2="15" y2="25" stroke="#2563eb" stroke-width="2" opacity="0.8"/>
+  </g>
+  
+  <!-- 텍스트 -->
+  <text x="70" y="25" font-family="Arial, sans-serif" font-size="24" font-weight="900" fill="#111827">Link IT</text>
+  <text x="70" y="45" font-family="Arial, sans-serif" font-size="12" font-weight="300" fill="#6b7280">사람-기술-환경 연결</text>
+  
+  <!-- 그라데이션 정의 -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9333ea;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1d4ed8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

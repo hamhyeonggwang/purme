@@ -1,0 +1,32 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 배경 원형 -->
+  <circle cx="20" cy="20" r="18" fill="url(#gradient1)"/>
+  
+  <!-- 중앙 연결점 -->
+  <circle cx="20" cy="20" r="4" fill="white" stroke="#2563eb" stroke-width="1"/>
+  
+  <!-- 사람 (상단) -->
+  <circle cx="20" cy="8" r="3" fill="#16a34a" opacity="0.9"/>
+  <text x="20" y="10" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="white" text-anchor="middle">사</text>
+  
+  <!-- 기술 (우측) -->
+  <circle cx="32" cy="20" r="3" fill="#9333ea" opacity="0.9"/>
+  <text x="32" y="22" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="white" text-anchor="middle">기</text>
+  
+  <!-- 환경 (하단) -->
+  <circle cx="20" cy="32" r="3" fill="#f59e0b" opacity="0.9"/>
+  <text x="20" y="34" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="white" text-anchor="middle">환</text>
+  
+  <!-- 연결선들 -->
+  <line x1="20" y1="20" x2="20" y2="8" stroke="white" stroke-width="1" opacity="0.8"/>
+  <line x1="20" y1="20" x2="32" y2="20" stroke="white" stroke-width="1" opacity="0.8"/>
+  <line x1="20" y1="20" x2="20" y2="32" stroke="white" stroke-width="1" opacity="0.8"/>
+  
+  <!-- 그라데이션 정의 -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9333ea;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

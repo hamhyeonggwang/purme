@@ -1,0 +1,128 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle with soft gradient -->
+  <circle cx="200" cy="200" r="180" fill="url(#backgroundGradient)" opacity="0.1"/>
+  
+  <!-- Main connection network -->
+  <g id="connectionNetwork">
+    <!-- Central hub -->
+    <circle cx="200" cy="200" r="25" fill="url(#centralGradient)" stroke="url(#centralStroke)" stroke-width="3"/>
+    
+    <!-- Human element (top-left) -->
+    <g id="humanElement">
+      <circle cx="120" cy="120" r="20" fill="url(#mintGradient)"/>
+      <circle cx="120" cy="120" r="12" fill="white" opacity="0.8"/>
+      <!-- Simple human figure -->
+      <circle cx="120" cy="110" r="6" fill="white"/>
+      <rect x="115" y="115" width="10" height="12" rx="2" fill="white"/>
+      <rect x="112" y="125" width="4" height="8" rx="2" fill="white"/>
+      <rect x="124" y="125" width="4" height="8" rx="2" fill="white"/>
+    </g>
+    
+    <!-- Brain/Technology element (top-right) -->
+    <g id="brainElement">
+      <circle cx="280" cy="120" r="20" fill="url(#lavenderGradient)"/>
+      <circle cx="280" cy="120" r="12" fill="white" opacity="0.8"/>
+      <!-- Brain/neural network symbol -->
+      <path d="M275 115 Q280 110 285 115 Q285 120 280 125 Q275 120 275 115" fill="white" opacity="0.9"/>
+      <circle cx="275" cy="115" r="2" fill="white"/>
+      <circle cx="285" cy="115" r="2" fill="white"/>
+      <circle cx="280" cy="120" r="2" fill="white"/>
+    </g>
+    
+    <!-- Environment element (bottom) -->
+    <g id="environmentElement">
+      <circle cx="200" cy="320" r="20" fill="url(#yellowGradient)"/>
+      <circle cx="200" cy="320" r="12" fill="white" opacity="0.8"/>
+      <!-- Environment symbol (tree/community) -->
+      <path d="M195 315 Q200 310 205 315 Q205 320 200 325 Q195 320 195 315" fill="white" opacity="0.9"/>
+      <rect x="198" y="320" width="4" height="8" rx="1" fill="white"/>
+    </g>
+    
+    <!-- Connection lines with gentle curves -->
+    <path d="M140 140 Q170 170 200 200" stroke="url(#connectionGradient)" stroke-width="4" fill="none" opacity="0.7"/>
+    <path d="M260 140 Q230 170 200 200" stroke="url(#connectionGradient)" stroke-width="4" fill="none" opacity="0.7"/>
+    <path d="M200 225 Q200 250 200 300" stroke="url(#connectionGradient)" stroke-width="4" fill="none" opacity="0.7"/>
+    
+    <!-- Subtle interaction symbols -->
+    <g id="interactionSymbols" opacity="0.6">
+      <!-- Speech bubble near human -->
+      <ellipse cx="150" cy="100" rx="15" ry="10" fill="url(#mintGradient)" opacity="0.3"/>
+      <path d="M145 110 L140 115 L145 115 Z" fill="url(#mintGradient)" opacity="0.3"/>
+      
+      <!-- Neural network pattern near brain -->
+      <circle cx="300" cy="100" r="3" fill="url(#lavenderGradient)" opacity="0.4"/>
+      <circle cx="305" cy="105" r="2" fill="url(#lavenderGradient)" opacity="0.4"/>
+      <circle cx="295" cy="105" r="2" fill="url(#lavenderGradient)" opacity="0.4"/>
+      
+      <!-- Bridge curve near environment -->
+      <path d="M180 310 Q200 305 220 310" stroke="url(#yellowGradient)" stroke-width="2" fill="none" opacity="0.4"/>
+    </g>
+  </g>
+  
+  <!-- Main text -->
+  <text x="200" y="180" font-family="Arial, sans-serif" font-size="36" font-weight="700" fill="url(#textGradient)" text-anchor="middle">Link IT</text>
+  
+  <!-- Tagline -->
+  <text x="200" y="210" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#666666" text-anchor="middle">Link Interaction &amp; Thinking</text>
+  
+  <!-- Subtle decorative elements -->
+  <g id="decorativeElements" opacity="0.3">
+    <circle cx="80" cy="80" r="2" fill="url(#mintGradient)"/>
+    <circle cx="320" cy="80" r="2" fill="url(#lavenderGradient)"/>
+    <circle cx="80" cy="320" r="2" fill="url(#yellowGradient)"/>
+    <circle cx="320" cy="320" r="2" fill="url(#mintGradient)"/>
+  </g>
+  
+  <!-- Gradient definitions -->
+  <defs>
+    <!-- Background gradient -->
+    <radialGradient id="backgroundGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#A4E4E0;stop-opacity:0.1"/>
+      <stop offset="100%" style="stop-color:#C7B9FF;stop-opacity:0.05"/>
+    </radialGradient>
+    
+    <!-- Central hub gradient -->
+    <radialGradient id="centralGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#A4E4E0;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#C7B9FF;stop-opacity:1"/>
+    </radialGradient>
+    
+    <!-- Central stroke gradient -->
+    <linearGradient id="centralStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A4E4E0;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#C7B9FF;stop-opacity:1"/>
+    </linearGradient>
+    
+    <!-- Mint gradient -->
+    <radialGradient id="mintGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#A4E4E0;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#7DD3C7;stop-opacity:1"/>
+    </radialGradient>
+    
+    <!-- Lavender gradient -->
+    <radialGradient id="lavenderGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#C7B9FF;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#A78BFA;stop-opacity:1"/>
+    </radialGradient>
+    
+    <!-- Yellow gradient -->
+    <radialGradient id="yellowGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFF8B5;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#FDE68A;stop-opacity:1"/>
+    </radialGradient>
+    
+    <!-- Connection gradient -->
+    <linearGradient id="connectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A4E4E0;stop-opacity:0.8"/>
+      <stop offset="50%" style="stop-color:#C7B9FF;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#FFF8B5;stop-opacity:0.8"/>
+    </linearGradient>
+    
+    <!-- Text gradient -->
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2D3748;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#4A5568;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+</svg>
+
