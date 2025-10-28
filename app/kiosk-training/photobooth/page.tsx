@@ -17,6 +17,8 @@ interface PhotoBoothState {
   cameraStream: MediaStream | null
   capturedImages: string[]
   isCameraReady: boolean
+  countdown: number
+  currentPhoto: number
 }
 
 export default function PhotoBoothKiosk() {
@@ -31,7 +33,9 @@ export default function PhotoBoothKiosk() {
     gameCompleted: false,
     cameraStream: null,
     capturedImages: [],
-    isCameraReady: false
+    isCameraReady: false,
+    countdown: 0,
+    currentPhoto: 0
   })
 
   const themes = [
@@ -169,15 +173,34 @@ export default function PhotoBoothKiosk() {
     setGameState(prev => ({
       ...prev,
       isCapturing: true,
-      capturedImages: []
+      capturedImages: [],
+      currentPhoto: 0
     }))
 
-    // 4장의 사진을 연속으로 촬영
+    // 4장의 사진을 5초 간격으로 촬영
     const capturedPhotos: string[] = []
     
     for (let i = 0; i < 4; i++) {
-      // 1초 대기 후 촬영
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // 현재 사진 번호 업데이트
+      setGameState(prev => ({
+        ...prev,
+        currentPhoto: i + 1
+      }))
+
+      // 5초 카운트다운
+      for (let count = 5; count > 0; count--) {
+        setGameState(prev => ({
+          ...prev,
+          countdown: count
+        }))
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+      
+      // 카운트다운 종료 후 촬영
+      setGameState(prev => ({
+        ...prev,
+        countdown: 0
+      }))
       
       try {
         const photoData = await capturePhoto()
@@ -194,7 +217,9 @@ export default function PhotoBoothKiosk() {
       isCapturing: false,
       capturedImages: capturedPhotos,
       photos: capturedPhotos.length > 0 ? capturedPhotos : samplePhotos,
-      currentStep: prev.currentStep + 1
+      currentStep: prev.currentStep + 1,
+      countdown: 0,
+      currentPhoto: 0
     }))
   }
 
@@ -261,7 +286,9 @@ export default function PhotoBoothKiosk() {
       gameCompleted: false,
       cameraStream: null,
       capturedImages: [],
-      isCameraReady: false
+      isCameraReady: false,
+      countdown: 0,
+      currentPhoto: 0
     })
   }
 
@@ -305,11 +332,11 @@ export default function PhotoBoothKiosk() {
             <div className="bg-pink-800 rounded-2xl p-8 shadow-inner">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 
-                {/* 왼쪽: 카메라 및 조명 */}
-                <div className="space-y-6">
-                  {/* 실제 카메라 화면 */}
-                  <div className="text-center">
-                    <div className="w-80 h-60 mx-auto rounded-lg border-2 border-pink-400 bg-black relative overflow-hidden">
+                {/* 왼쪽: 큰 카메라 화면 */}
+                <div className="flex items-center justify-center">
+                  {/* 실제 카메라 화면 - 크게 확장 */}
+                  <div className="text-center w-full">
+                    <div className="w-full h-96 mx-auto rounded-lg border-2 border-pink-400 bg-black relative overflow-hidden">
                       {gameState.isCameraReady && gameState.cameraStream ? (
                         <video
                           id="camera-video"
@@ -330,12 +357,12 @@ export default function PhotoBoothKiosk() {
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <div className="text-center">
-                            <div className="text-gray-400 text-4xl mb-2">📷</div>
-                            <p className="text-gray-400 text-sm">카메라 준비 중...</p>
+                            <div className="text-gray-400 text-6xl mb-4">📷</div>
+                            <p className="text-gray-400 text-lg">카메라 준비 중...</p>
                             {!gameState.isCameraReady && (
                               <button
                                 onClick={initializeCamera}
-                                className="mt-2 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-pink-100 rounded-lg text-sm"
+                                className="mt-4 px-6 py-3 bg-pink-600 hover:bg-pink-700 text-pink-100 rounded-lg text-lg"
                               >
                                 카메라 활성화
                               </button>
@@ -348,38 +375,26 @@ export default function PhotoBoothKiosk() {
                       {gameState.isCapturing && (
                         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                           <div className="text-center text-white">
-                            <div className="text-6xl mb-4 animate-pulse">📸</div>
-                            <p className="text-xl font-bold">촬영 중...</p>
-                            <p className="text-sm">웃어주세요! 😊</p>
+                            {gameState.countdown > 0 ? (
+                              <div>
+                                <div className="text-8xl font-bold mb-4 text-pink-400 animate-pulse">
+                                  {gameState.countdown}
+                                </div>
+                                <p className="text-2xl font-bold mb-2">준비하세요!</p>
+                                <p className="text-lg">사진 {gameState.currentPhoto}/4</p>
+                              </div>
+                            ) : (
+                              <div>
+                                <div className="text-8xl mb-4 animate-pulse">📸</div>
+                                <p className="text-2xl font-bold">촬영 중...</p>
+                                <p className="text-lg">웃어주세요! 😊</p>
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}
                     </div>
-                    <p className="text-pink-200 text-sm mt-2">실시간 카메라</p>
-                  </div>
-
-                  {/* 조명 */}
-                  <div className="text-center">
-                    <div className="w-32 h-24 mx-auto rounded-lg border-2 border-dashed bg-gray-600 flex items-center justify-center mb-4">
-                      <span className="text-gray-400 text-2xl">💡</span>
-                    </div>
-                    <p className="text-pink-200 text-sm">조명</p>
-                  </div>
-
-                  {/* 거울 */}
-                  <div className="text-center">
-                    <div className="w-36 h-28 mx-auto rounded-lg border-2 border-dashed bg-gray-600 flex items-center justify-center mb-4">
-                      <span className="text-gray-400 text-2xl">🪞</span>
-                    </div>
-                    <p className="text-pink-200 text-sm">거울</p>
-                  </div>
-
-                  {/* 의자 */}
-                  <div className="text-center">
-                    <div className="w-24 h-16 mx-auto rounded-lg border-2 border-dashed bg-gray-600 flex items-center justify-center mb-4">
-                      <span className="text-gray-400 text-xl">🪑</span>
-                    </div>
-                    <p className="text-pink-200 text-sm">의자</p>
+                    <p className="text-pink-200 text-lg mt-4 font-semibold">실시간 카메라</p>
                   </div>
                 </div>
 
@@ -514,14 +529,30 @@ export default function PhotoBoothKiosk() {
                         animate={{ opacity: 1, scale: 1 }}
                         className="text-center"
                       >
-                        <div className="text-8xl mb-6 animate-pulse">📸</div>
-                        <h3 className="text-2xl font-bold text-pink-100 mb-4">촬영 중...</h3>
-                        <p className="text-pink-200">웃어주세요! 😊</p>
-                        <div className="mt-6">
-                          <div className="w-full bg-pink-600 rounded-full h-2">
-                            <div className="bg-pink-400 h-2 rounded-full animate-pulse" style={{ width: '100%' }}></div>
+                        {gameState.countdown > 0 ? (
+                          <div>
+                            <div className="text-8xl font-bold mb-6 text-pink-400 animate-pulse">
+                              {gameState.countdown}
+                            </div>
+                            <h3 className="text-2xl font-bold text-pink-100 mb-4">준비하세요!</h3>
+                            <p className="text-pink-200 text-lg">사진 {gameState.currentPhoto}/4</p>
+                            <div className="mt-6">
+                              <div className="w-full bg-pink-600 rounded-full h-3">
+                                <div 
+                                  className="bg-pink-400 h-3 rounded-full transition-all duration-1000" 
+                                  style={{ width: `${((5 - gameState.countdown) / 5) * 100}%` }}
+                                ></div>
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div>
+                            <div className="text-8xl mb-6 animate-pulse">📸</div>
+                            <h3 className="text-2xl font-bold text-pink-100 mb-4">촬영 중...</h3>
+                            <p className="text-pink-200 text-lg">웃어주세요! 😊</p>
+                            <p className="text-pink-200">사진 {gameState.currentPhoto}/4</p>
+                          </div>
+                        )}
                       </motion.div>
                     )}
 
