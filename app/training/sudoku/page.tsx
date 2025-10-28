@@ -83,11 +83,13 @@ export default function SudokuGame() {
   }
 
   // 배열 섞기
-  const shuffleArray = (array: number[]) => {
-    for (let i = array.length - 1; i > 0; i--) {
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array]
+    for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]]
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
+    return shuffled
   }
 
   // 스도쿠 해결 알고리즘
@@ -150,11 +152,11 @@ export default function SudokuGame() {
       }
     }
     
-    shuffleArray(positions as {row: number, col: number}[])
+    const shuffledPositions = shuffleArray(positions)
     
     // 일부 셀만 보여주기
     for (let i = 0; i < cellsToRemove; i++) {
-      const {row, col} = positions[i]
+      const {row, col} = shuffledPositions[i]
       grid[row][col] = {
         value: null,
         isOriginal: false,
@@ -164,8 +166,8 @@ export default function SudokuGame() {
     }
     
     // 나머지 셀은 원본으로 표시
-    for (let i = cellsToRemove; i < positions.length; i++) {
-      const {row, col} = positions[i]
+    for (let i = cellsToRemove; i < shuffledPositions.length; i++) {
+      const {row, col} = shuffledPositions[i]
       grid[row][col] = {
         value: solution[row][col],
         isOriginal: true,
