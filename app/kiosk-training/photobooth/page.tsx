@@ -258,7 +258,10 @@ export default function PhotoBoothKiosk() {
       photos: [],
       selectedPhotos: [],
       isCapturing: false,
-      gameCompleted: false
+      gameCompleted: false,
+      cameraStream: null,
+      capturedImages: [],
+      isCameraReady: false
     })
   }
 

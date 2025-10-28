@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
-import { useAuth } from '@/components/providers/AuthProvider'
 import { trainingAPI } from '@/lib/api'
 import toast from 'react-hot-toast'
 
@@ -44,7 +43,6 @@ interface GameState {
 
 export default function Puzzle3DPage() {
   // const router = useRouter() // 사용하지 않음
-  const { user } = useAuth()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const gameLoopRef = useRef<number>()
   const mouseRef = useRef({ x: 0, y: 0, isDown: false })
@@ -616,27 +614,7 @@ export default function Puzzle3DPage() {
             animate={{ y: 0, opacity: 1 }}
             className="text-center"
           >
-            {!user ? (
-              <div className="max-w-md mx-auto">
-                <div className="card mb-8">
-                  <div className="text-6xl mb-6">🔐</div>
-                  <h2 className="text-3xl font-bold text-mint-600 mb-6">
-                    로그인이 필요합니다
-                  </h2>
-                  <p className="text-lg text-gray-700 mb-6">
-                    훈련 결과를 저장하고 진행률을 추적하려면 로그인해주세요.
-                  </p>
-                  <div className="flex space-x-4">
-                    <Link href="/" className="btn-primary flex-1">
-                      로그인하기
-                    </Link>
-                    <Link href="/training" className="btn-secondary flex-1">
-                      뒤로 가기
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ) : showInstructions ? (
+            {showInstructions ? (
               <div className="max-w-2xl mx-auto">
                 <div className="card mb-8">
                   <div className="text-6xl mb-6">🧩</div>

@@ -63,6 +63,27 @@ export default function KioskTrainingPage() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [showOpening, setShowOpening] = useState(true)
 
+  // 게임 초기화 함수
+  const resetGame = () => {
+    setGameState({
+      currentTraining: null,
+      currentStep: 0,
+      score: 0,
+      timeLeft: 300,
+      gameStarted: false,
+      gameCompleted: false,
+      startTime: null,
+      correctAnswers: 0,
+      totalAnswers: 0,
+      streak: 0,
+      maxStreak: 0
+    })
+    setShowInstructions(true)
+    setShowFeedback(false)
+    setFeedbackMessage('')
+    setSelectedOption(null)
+  }
+
   // 키오스크 훈련 데이터
   const kioskTrainings: KioskTraining[] = [
     {
@@ -767,7 +788,7 @@ export default function KioskTrainingPage() {
               <div className="text-sm text-gray-600 mt-1">시간</div>
             </div>
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg text-center border border-mint-200/50">
-              <div className="text-2xl font-bold text-mint-600">{accuracy}%</div>
+              <div className="text-2xl font-bold text-mint-600">{gameState.totalAnswers > 0 ? Math.round((gameState.correctAnswers / gameState.totalAnswers) * 100) : 0}%</div>
               <div className="text-sm text-gray-600 mt-1">정확도</div>
             </div>
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg text-center border border-mint-200/50">
@@ -962,7 +983,7 @@ export default function KioskTrainingPage() {
                   <div className="text-sm text-gray-600">최종 점수</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{accuracy}%</div>
+                  <div className="text-2xl font-bold text-blue-600">{gameState.totalAnswers > 0 ? Math.round((gameState.correctAnswers / gameState.totalAnswers) * 100) : 0}%</div>
                   <div className="text-sm text-gray-600">정확도</div>
                 </div>
                 <div className="text-center">
