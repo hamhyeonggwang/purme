@@ -8,72 +8,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 // 게임 데이터 - 구현된 게임만 표시
 const games = [
   {
-    id: 'pet-finder',
-    name: '애완동물 찾기',
-    category: '시지각 및 공간 처리',
-    description: '시각적 탐색과 주의력을 향상시킵니다',
-    icon: '🐕',
-    difficulty: '초급',
-    duration: '5-10분',
-    color: 'mint',
-    implemented: true
-  },
-  {
-    id: 'memory-match',
-    name: '짝 맞추기',
-    category: '기억력 및 작업기억',
-    description: '기억력과 인식 능력을 훈련합니다',
-    icon: '🧠',
-    difficulty: '초급',
-    duration: '10-15분',
-    color: 'yellow',
-    implemented: true
-  },
-  {
-    id: 'fruit-frenzy',
-    name: 'Fruit Frenzy',
-    category: '주의집중 및 선택적 주의',
-    description: '빠른 반응과 선택적 주의를 훈련합니다',
-    icon: '🍎',
-    difficulty: '초급',
-    duration: '5-10분',
-    color: 'lavender',
-    implemented: true
-  },
-  {
-    id: 'marble-race',
-    name: '마블 레이스',
-    category: '주의집중 및 선택적 주의',
-    description: '지속적 주의와 반응 속도를 향상시킵니다',
-    icon: '🔴',
-    difficulty: '중급',
-    duration: '10-15분',
-    color: 'lavender',
-    implemented: true
-  },
-  {
-    id: 'pipe-panic',
-    name: 'Pipe Panic',
-    category: '추론 및 문제해결',
-    description: '논리적 연결과 문제해결 능력을 훈련합니다',
-    icon: '🔧',
-    difficulty: '중급',
-    duration: '15-25분',
-    color: 'mint',
-    implemented: true
-  },
-  {
-    id: '3d-puzzle',
-    name: '3D 퍼즐',
-    category: '시지각 및 공간 처리',
-    description: '3차원 공간 인지와 조작 능력을 향상시킵니다',
-    icon: '🧩',
-    difficulty: '초급',
-    duration: '10-20분',
-    color: 'mint',
-    implemented: true
-  },
-  {
     id: 'sudoku',
     name: '스도쿠',
     category: '추론 및 문제해결',
@@ -134,6 +68,26 @@ const games = [
 const upcomingGames = [
   // 시지각 및 공간 처리
   {
+    id: 'pet-finder',
+    category: '시지각 및 공간 처리',
+    description: '시각적 탐색과 주의력을 향상시킵니다',
+    icon: '🐕',
+    difficulty: '초급',
+    duration: '5-10분',
+    color: 'mint',
+    implemented: false
+  },
+  {
+    id: '3d-puzzle',
+    category: '시지각 및 공간 처리',
+    description: '3차원 공간 인지와 조작 능력을 향상시킵니다',
+    icon: '🧩',
+    difficulty: '초급',
+    duration: '10-20분',
+    color: 'mint',
+    implemented: false
+  },
+  {
     id: 'chess',
     category: '시지각 및 공간 처리',
     description: '공간적 사고와 전략적 계획을 훈련합니다',
@@ -166,6 +120,26 @@ const upcomingGames = [
 
   // 주의집중 및 선택적 주의
   {
+    id: 'fruit-frenzy',
+    category: '주의집중 및 선택적 주의',
+    description: '빠른 반응과 선택적 주의를 훈련합니다',
+    icon: '🍎',
+    difficulty: '초급',
+    duration: '5-10분',
+    color: 'lavender',
+    implemented: false
+  },
+  {
+    id: 'marble-race',
+    category: '주의집중 및 선택적 주의',
+    description: '지속적 주의와 반응 속도를 향상시킵니다',
+    icon: '🔴',
+    difficulty: '중급',
+    duration: '10-15분',
+    color: 'lavender',
+    implemented: false
+  },
+  {
     id: 'melody-tennis',
     category: '주의집중 및 선택적 주의',
     description: '청각적 주의와 동기화 능력을 개발합니다',
@@ -197,6 +171,16 @@ const upcomingGames = [
   },
 
   // 기억력 및 작업기억
+  {
+    id: 'memory-match',
+    category: '기억력 및 작업기억',
+    description: '기억력과 인식 능력을 훈련합니다',
+    icon: '🧠',
+    difficulty: '초급',
+    duration: '10-15분',
+    color: 'yellow',
+    implemented: false
+  },
   {
     id: 'memory-games',
     category: '기억력 및 작업기억',
@@ -239,6 +223,16 @@ const upcomingGames = [
   },
 
   // 추론 및 문제해결
+  {
+    id: 'pipe-panic',
+    category: '추론 및 문제해결',
+    description: '논리적 연결과 문제해결 능력을 훈련합니다',
+    icon: '🔧',
+    difficulty: '중급',
+    duration: '15-25분',
+    color: 'mint',
+    implemented: false
+  },
   {
     id: 'crystal-miner',
     category: '추론 및 문제해결',
