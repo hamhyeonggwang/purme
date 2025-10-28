@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, RotateCcw } from 'lucide-react'
+import { ArrowLeft, RotateCcw, Mouse } from 'lucide-react'
 import Link from 'next/link'
 
 interface GameState {
@@ -160,7 +160,7 @@ export default function ReactionSpeedPage() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">반응 속도 훈련</h1>
-          <p className="text-lg text-gray-600">마우스가 나타나면 빠르게 클릭하세요!</p>
+          <p className="text-lg text-gray-600">아이콘이 나타나면 빠르게 클릭하세요!</p>
         </div>
 
         {!gameState.gameStarted && !gameState.gameCompleted && (
@@ -176,7 +176,7 @@ export default function ReactionSpeedPage() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">게임 설명</h2>
                 <p className="text-gray-600">
-                  화면에 마우스가 나타나면 빠르게 클릭하세요!<br/>
+                  화면에 아이콘이 나타나면 빠르게 클릭하세요!<br/>
                   반응 속도를 측정하여 집중력을 향상시킵니다.
                 </p>
               </div>
@@ -206,9 +206,11 @@ export default function ReactionSpeedPage() {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}
-                        className="w-16 h-16 bg-green-500 rounded-full cursor-pointer hover:bg-green-600 transition-colors"
+                        className="w-16 h-16 bg-green-500 rounded-full cursor-pointer hover:bg-green-600 transition-colors flex items-center justify-center"
                         onClick={handleMouseClick}
-                      />
+                      >
+                        <Mouse className="w-8 h-8 text-white" />
+                      </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
@@ -216,7 +218,7 @@ export default function ReactionSpeedPage() {
 
               {!gameState.showMouse && (
                 <div className="text-gray-600">
-                  마우스가 나타날 때까지 기다리세요...
+                  아이콘이 나타날 때까지 기다리세요...
                 </div>
               )}
 

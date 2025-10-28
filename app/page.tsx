@@ -54,12 +54,6 @@ export default function HomePage() {
               <Link href="/about" className="text-gray-700 hover:text-yellow-600 font-medium transition-colors">
                 소개
               </Link>
-              <Link href="/program" className="text-gray-700 hover:text-mint-600 font-medium transition-colors">
-                프로그램
-              </Link>
-              <Link href="/evaluation" className="text-gray-700 hover:text-lavender-600 font-medium transition-colors">
-                평가
-              </Link>
             </nav>
 
             {/* 게스트 모드 표시 */}
