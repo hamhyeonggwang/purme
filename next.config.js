@@ -14,7 +14,7 @@ const nextConfig = {
     unoptimized: true, // Vercel에서 이미지 최적화 문제 방지
   },
   
-  // 헤더 설정 (보안)
+  // 헤더 설정 (보안 및 카메라 접근)
   async headers() {
     return [
       {
@@ -31,6 +31,19 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
+        ],
+      },
+      {
+        source: '/kiosk-training/photobooth',
+        headers: [
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(self), microphone=(self)',
           },
         ],
       },

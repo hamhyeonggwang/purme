@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>포토부스 키오스크 · 큐트 에디션</title>
+    <style>
+        /* ===== CSS 변수 및 기본 설정 ===== */
+        :root {
+            --bg: #fff6fb;
+            --panel: #ffffff;
+            --panel-2: #fdf1f6;
+            --text: #2a2a2a;
+            --muted: #7a7a7a;
+            --accent: #ff7eb8;
+            --accent-2: #a78bfa;
+            --ok: #34c759;
+            --warn: #ffcc00;
+            --danger: #ff3b30;
+            --btn-height: 56px;
+            --radius: 22px;
+            --shadow: 0 10px 30px rgba(255, 126, 184, 0.15);
+            --border: 2px solid rgba(255, 126, 184, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+            line-height: 1.45;
+            color: var(--text);
+            background: 
+                radial-gradient(1200px 800px at -10% -10%, #ffe3f1 0%, transparent 60%),
+                radial-gradient(900px 700px at 110% 0%, #f0ecff 0%, transparent 60%),
+                radial-gradient(700px 600px at 50% 120%, #fff7d6 0%, transparent 60%),
+                var(--bg);
+            overflow-x: hidden;
+        }
+
+        /* ===== 레이아웃 ===== */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .header {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .badge {
+            font-size: 22px;
+            padding: 0.25rem 0.7rem;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #ffd1e6, #e7d7ff);
+            box-shadow: var(--shadow);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .status-tag {
+            padding: 0.35rem 0.7rem;
+            border-radius: 999px;
+            background: var(--panel-2);
+            font-size: 12px;
+            color: var(--muted);
+            border: var(--border);
+            transition: transform 0.2s;
+        }
+
+        .status-tag.active {
+            color: var(--accent);
+            transform: scale(1.06);
+        }
+
+        /* ===== 단계 표시기 ===== */
+        .step-indicator {
+            display: flex;
+            gap: 6px;
+            margin: 10px 0 14px;
+        }
+
+        .step {
+            flex: 1;
+            height: 10px;
+            background: #ffe3f1;
+            border-radius: 99px;
+            overflow: hidden;
+            border: 1px solid #ffd1e6;
+        }
+
+        .step.active {
+            background: linear-gradient(90deg, #ff9bc3, #ad9bff);
+        }
+
+        /* ===== 그리드 레이아웃 ===== */
+        .grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--panel);
+            border-radius: var(--radius);
+            padding: 14px;
+            box-shadow: var(--shadow);
+            border: var(--border);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin: 0 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== 버튼 스타일 ===== */
+        .btn {
+            height: var(--btn-height);
+            border: none;
+            border-radius: 16px;
+            padding: 0 18px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            border: var(--border);
+            background: var(--panel-2);
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+
+        .btn:focus-visible {
+            outline: 4px solid #ffd1e6;
+            outline-offset: 2px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(255, 126, 184, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(180deg, #ffacd1, #ff7eb8);
+            color: #3e0a24;
+            font-weight: 800;
+        }
+
+        .btn-success {
+            background: linear-gradient(180deg, #b8f0c6, #7ee2a1);
+            color: #0f2918;
+            font-weight: 800;
+        }
+
+        .btn-warning {
+            background: linear-gradient(180deg, #ffe58a, #ffd74b);
+            color: #3a2b00;
+            font-weight: 800;
+        }
+
+        .btn-danger {
+            background: linear-gradient(180deg, #ffb3ad, #ff6f66);
+            color: #3a0c0a;
+            font-weight: 800;
+        }
+
+        .btn-ghost {
+            background: #ffffff;
+            border: 2px dashed rgba(167, 139, 250, 0.4);
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .toolbar label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .toolbar select,
+        .toolbar input[type="range"] {
+            height: var(--btn-height);
+            border: none;
+            border-radius: 16px;
+            padding: 0 12px;
+            font-size: 14px;
+            background: var(--panel-2);
+            color: var(--text);
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            border: var(--border);
+        }
+
+        /* ===== 비디오 영역 ===== */
+        .video-container {
+            position: relative;
+            aspect-ratio: 3/2;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: var(--shadow);
+            border: 2px solid rgba(255, 126, 184, 0.35);
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: var(--filter, none);
+        }
+
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-overlay .sticker {
+            position: absolute;
+            font-size: clamp(28px, 4vw, 40px);
+            transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .video-overlay .floating-bg {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.75;
+            background:
+                radial-gradient(12px 12px at 10% 20%, rgba(255, 126, 184, 0.35) 0 60%, transparent 61%),
+                radial-gradient(10px 10px at 80% 30%, rgba(167, 139, 250, 0.35) 0 60%, transparent 61%),
+                radial-gradient(8px 8px at 30% 80%, rgba(255, 231, 150, 0.35) 0 60%, transparent 61%);
+            animation: float 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            from { transform: translateY(-8px); }
+            to { transform: translateY(8px); }
+        }
+
+        .countdown {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 96px;
+            color: #ff2a92;
+            text-shadow: 0 6px 0 rgba(0, 0, 0, 0.25);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+        }
+
+        .flash {
+            animation: flash 0.35s ease;
+        }
+
+        @keyframes flash {
+            from { background: rgba(255, 255, 255, 0.95); }
+            to { background: transparent; }
+        }
+
+        /* ===== 썸네일 그리드 ===== */
+        .thumbnails {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .thumbnail {
+            background: #000;
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid rgba(255, 126, 184, 0.35);
+        }
+
+        .thumbnail img {
+            width: 100%;
+            display: block;
+        }
+
+        .thumbnail .delete-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(0, 0, 0, 0.55);
+            border-radius: 12px;
+            padding: 6px 10px;
+            font-size: 12px;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* ===== 프레임 스타일 ===== */
+        .frame-white {
+            box-shadow: inset 0 0 0 18px rgba(255, 255, 255, 0.9);
+        }
+
+        .frame-film {
+            background: repeating-linear-gradient(90deg, transparent 0 60px, rgba(0, 0, 0, 0.25) 60px 80px);
+        }
+
+        .frame-heart {
+            width: 60%;
+            height: 60%;
+            border: 8px solid rgba(255, 105, 180, 0.9);
+            border-radius: 60% 60% 60% 60% / 55% 55% 45% 45%;
+            transform: rotate(-45deg);
+            position: absolute;
+            top: 20%;
+            left: 20%;
+        }
+
+        .frame-passport {
+            position: absolute;
+            inset: 16%;
+            border: 4px solid rgba(167, 139, 250, 0.9);
+            box-shadow: inset 0 0 0 100vmax rgba(167, 139, 250, 0.1);
+        }
+
+        .frame-polaroid {
+            box-shadow: inset 0 0 0 14px #fff;
+        }
+
+        .frame-polaroid::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 18%;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        /* ===== 접근성 ===== */
+        .a11y-contrast * {
+            background: transparent !important;
+            color: #000 !important;
+            border-color: #000 !important;
+            box-shadow: none !important;
+        }
+
+        .a11y-font {
+            font-size: 1.15em;
+        }
+
+        /* ===== 반응형 ===== */
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .header-controls {
+                justify-content: center;
+            }
+        }
+
+        /* ===== 숨김 요소 ===== */
+        .hidden {
+            display: none !important;
+        }
+
+        canvas {
+            display: none;
+        }
+
+        .printable {
+            display: none;
+        }
+
+        @media print {
+            .printable {
+                display: block;
+            }
+            
+            .no-print {
+                display: none;
+            }
+            
+            body {
+                background: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" role="application" aria-label="포토부스 키오스크">
+        <!-- 헤더 -->
+        <header class="header">
+            <h1 aria-live="polite">
+                <span class="badge">📸 포토부스</span>
+                귀여운 촬영
+            </h1>
+            <div class="header-controls">
+                <button id="btnHome" class="btn btn-ghost" aria-label="처음으로">처음으로</button>
+                <button id="btnHelp" class="btn btn-ghost" aria-label="도움말">도움말</button>
+                <button id="btnFontSize" class="btn btn-ghost" aria-label="글자 크게">글자+</button>
+                <button id="btnContrast" class="btn btn-ghost" aria-label="고대비">고대비</button>
+                <span class="status-tag" id="permissionStatus" aria-live="polite">권한: 대기</span>
+            </div>
+        </header>
+
+        <!-- 단계 표시기 -->
+        <div class="step-indicator" aria-hidden="true">
+            <div class="step active" title="1. 준비"></div>
+            <div class="step" title="2. 촬영"></div>
+            <div class="step" title="3. 편집"></div>
+            <div class="step" title="4. 출력"></div>
+        </div>
+
+        <!-- 메인 그리드 -->
+        <div class="grid">
+            <!-- 왼쪽: 미리보기 -->
+            <section class="card" aria-labelledby="preview-title">
+                <h2 id="preview-title">미리보기 · 포즈 준비 💖</h2>
+                
+                <div class="video-container" id="videoContainer">
+                    <video id="video" autoplay playsinline aria-label="카메라 미리보기"></video>
+                    <div class="video-overlay" id="videoOverlay">
+                        <div class="floating-bg" id="floatingBg" style="display: none;"></div>
+                    </div>
+                    <div class="countdown" id="countdown" aria-live="assertive">3</div>
+                </div>
+
+                <!-- 촬영 컨트롤 -->
+                <div class="toolbar" role="group" aria-label="촬영 컨트롤">
+                    <button id="btnStart" class="btn btn-primary" aria-label="카메라 시작">카메라 시작</button>
+                    <button id="btnFlip" class="btn" aria-label="전면/후면 전환">전면/후면</button>
+                    <select id="selectDevice" aria-label="카메라 선택" title="카메라 선택"></select>
+                    <button id="btnShot" class="btn btn-success" aria-label="촬영" disabled>촬영</button>
+                    <button id="btnBurst" class="btn" aria-label="3연사 촬영" disabled>3연사</button>
+                    <button id="btnTimer" class="btn" aria-label="타이머 3초 촬영" disabled>3초 타이머</button>
+                </div>
+
+                <!-- 필터 및 효과 -->
+                <div class="toolbar" role="group" aria-label="필터 및 효과">
+                    <label>
+                        필터
+                        <select id="selectFilter" aria-label="필터 선택" title="필터">
+                            <option value="none">없음</option>
+                            <option value="grayscale(100%)">흑백</option>
+                            <option value="sepia(90%)">세피아</option>
+                            <option value="contrast(120%) saturate(115%)">선명</option>
+                            <option value="brightness(115%)">밝게</option>
+                            <option value="blur(1px) brightness(110%)">소프트</option>
+                        </select>
+                    </label>
+                    <label>
+                        밝기
+                        <input id="rangeBrightness" type="range" min="80" max="140" value="100" aria-label="밝기 슬라이더"/>
+                    </label>
+                    <label>
+                        프레임
+                        <select id="selectFrame" aria-label="프레임 선택" title="프레임">
+                            <option value="none">없음</option>
+                            <option value="white">화이트</option>
+                            <option value="film">필름</option>
+                            <option value="heart">하트</option>
+                            <option value="passport">증명가이드</option>
+                            <option value="polaroid">폴라로이드</option>
+                        </select>
+                    </label>
+                    <label>
+                        스티커
+                        <select id="selectSticker" aria-label="스티커 선택" title="스티커">
+                            <option value="none">선택</option>
+                            <option value="💗">하트</option>
+                            <option value="✨">반짝</option>
+                            <option value="🌸">벚꽃</option>
+                            <option value="🐰">토끼</option>
+                            <option value="⭐">별</option>
+                        </select>
+                    </label>
+                    <button id="btnAddSticker" class="btn btn-ghost" aria-label="스티커 추가">스티커 추가</button>
+                    <button id="btnCuteBg" class="btn btn-ghost" aria-label="귀여운 배경">큐트배경</button>
+                </div>
+
+                <p class="note">팁: HTTPS 또는 localhost에서 카메라 권한이 허용됩니다. 스티커를 추가해 더욱 귀엽게 꾸며보세요!</p>
+            </section>
+
+            <!-- 오른쪽: 썸네일 및 내보내기 -->
+            <section class="card" aria-labelledby="thumbs-title">
+                <h2 id="thumbs-title">촬영 결과 · 꾸미기 ✂️</h2>
+                
+                <div class="thumbnails" id="thumbnails" aria-live="polite"></div>
+                
+                <div class="toolbar" role="group" aria-label="결과 내보내기">
+                    <button id="btnMakeStrip" class="btn" aria-label="4컷 만들기" disabled>4컷 만들기</button>
+                    <button id="btnMake2x2" class="btn" aria-label="2x2 인쇄판 만들기" disabled>2×2 만들기</button>
+                    <button id="btnDownloadAll" class="btn" aria-label="전체 저장" disabled>전체 저장</button>
+                    <button id="btnPrint" class="btn btn-warning" aria-label="인쇄 미리보기" disabled>인쇄</button>
+                    <button id="btnClear" class="btn btn-danger" aria-label="모두 삭제" disabled>모두 삭제</button>
+                </div>
+                
+                <div class="header-controls">
+                    <span class="status-tag" id="shotCount">사진 0장</span>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- 숨김 캔버스 -->
+    <canvas id="canvas"></canvas>
+
+    <!-- 인쇄 영역 -->
+    <section class="printable" id="printArea" aria-hidden="true"></section>
+
+    <!-- 도움말 모달 -->
+    <dialog id="helpModal">
+        <h3>도움말</h3>
+        <ol>
+            <li><strong>카메라 시작</strong>을 누르고 권한을 허용합니다.</li>
+            <li><strong>필터/프레임/스티커</strong>로 미리 꾸민 뒤 촬영하세요.</li>
+            <li><strong>촬영/타이머/3연사</strong>를 사용할 수 있어요.</li>
+            <li>오른쪽에서 <strong>4컷/2×2/인쇄/전체 저장</strong>을 이용해요.</li>
+        </ol>
+        <form method="dialog">
+            <button class="btn btn-primary">닫기</button>
+        </form>
+    </dialog>
+
+    <script>
+        (() => {
+            'use strict';
+
+            // ===== DOM 요소 참조 =====
+            const elements = {
+                video: document.getElementById('video'),
+                canvas: document.getElementById('canvas'),
+                thumbnails: document.getElementById('thumbnails'),
+                printArea: document.getElementById('printArea'),
+                countdown: document.getElementById('countdown'),
+                videoOverlay: document.getElementById('videoOverlay'),
+                floatingBg: document.getElementById('floatingBg'),
+                permissionStatus: document.getElementById('permissionStatus'),
+                shotCount: document.getElementById('shotCount'),
+                
+                // 버튼들
+                btnStart: document.getElementById('btnStart'),
+                btnFlip: document.getElementById('btnFlip'),
+                btnShot: document.getElementById('btnShot'),
+                btnBurst: document.getElementById('btnBurst'),
+                btnTimer: document.getElementById('btnTimer'),
+                btnMakeStrip: document.getElementById('btnMakeStrip'),
+                btnMake2x2: document.getElementById('btnMake2x2'),
+                btnDownloadAll: document.getElementById('btnDownloadAll'),
+                btnPrint: document.getElementById('btnPrint'),
+                btnClear: document.getElementById('btnClear'),
+                btnHelp: document.getElementById('btnHelp'),
+                btnHome: document.getElementById('btnHome'),
+                btnCuteBg: document.getElementById('btnCuteBg'),
+                btnAddSticker: document.getElementById('btnAddSticker'),
+                btnFontSize: document.getElementById('btnFontSize'),
+                btnContrast: document.getElementById('btnContrast'),
+                
+                // 선택 요소들
+                selectDevice: document.getElementById('selectDevice'),
+                selectFilter: document.getElementById('selectFilter'),
+                selectFrame: document.getElementById('selectFrame'),
+                selectSticker: document.getElementById('selectSticker'),
+                rangeBrightness: document.getElementById('rangeBrightness'),
+                
+                // 모달
+                helpModal: document.getElementById('helpModal')
+            };
+
+            // ===== 상태 관리 =====
+            const state = {
+                stream: null,
+                facing: 'user',
+                deviceId: null,
+                shots: [],
+                filter: 'none',
+                brightness: 100,
+                stickers: [],
+                cuteBg: false,
+                a11yFont: false,
+                a11yContrast: false
+            };
+
+            // ===== 유틸리티 함수 =====
+            function setButtonsEnabled(enabled) {
+                [elements.btnShot, elements.btnBurst, elements.btnTimer].forEach(btn => {
+                    btn.disabled = !enabled;
+                });
+            }
+
+            function setExportEnabled() {
+                const hasShots = state.shots.length > 0;
+                [elements.btnMakeStrip, elements.btnMake2x2, elements.btnDownloadAll, elements.btnPrint, elements.btnClear].forEach(btn => {
+                    btn.disabled = !hasShots;
+                });
+            }
+
+            function updateShotCount() {
+                elements.shotCount.textContent = `사진 ${state.shots.length}장`;
+            }
+
+            function applyFilter() {
+                const filter = elements.selectFilter.value;
+                state.filter = filter;
+                const brightness = `brightness(${state.brightness}%)`;
+                elements.video.style.setProperty('--filter', `${filter} ${brightness}`.trim());
+            }
+
+            function applyFrame() {
+                const frameType = elements.selectFrame.value;
+                const overlay = elements.videoOverlay;
+                
+                // 기존 프레임 제거
+                overlay.className = 'video-overlay';
+                overlay.querySelectorAll('.frame-element').forEach(el => el.remove());
+                
+                if (frameType === 'none') return;
+                
+                const frameElement = document.createElement('div');
+                frameElement.className = `frame-element frame-${frameType}`;
+                overlay.appendChild(frameElement);
+            }
+
+            function addSticker(emoji) {
+                if (!emoji || emoji === 'none') return;
+                
+                const sticker = {
+                    emoji,
+                    x: 0.15 + Math.random() * 0.7,
+                    y: 0.20 + Math.random() * 0.6,
+                    rot: Math.random() * 30 - 15
+                };
+                
+                state.stickers.push(sticker);
+                renderStickers();
+            }
+
+            function renderStickers() {
+                // 기존 스티커 제거
+                elements.videoOverlay.querySelectorAll('.sticker').forEach(el => el.remove());
+                
+                // 스티커 렌더링
+                state.stickers.forEach(sticker => {
+                    const stickerEl = document.createElement('span');
+                    stickerEl.className = 'sticker';
+                    stickerEl.textContent = sticker.emoji;
+                    stickerEl.style.left = `${sticker.x * 100}%`;
+                    stickerEl.style.top = `${sticker.y * 100}%`;
+                    stickerEl.style.setProperty('--rot', `${sticker.rot}deg`);
+                    elements.videoOverlay.appendChild(stickerEl);
+                });
+            }
+
+            function toggleCuteBg() {
+                state.cuteBg = !state.cuteBg;
+                elements.floatingBg.style.display = state.cuteBg ? 'block' : 'none';
+            }
+
+            // ===== 카메라 관련 함수 =====
+            async function listDevices() {
+                try {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                    
+                    elements.selectDevice.innerHTML = videoDevices.map(device => 
+                        `<option value="${device.deviceId}">${device.label || '카메라'}</option>`
+                    ).join('');
+                    
+                    if (state.deviceId) {
+                        const option = Array.from(elements.selectDevice.options).find(opt => opt.value === state.deviceId);
+                        if (option) elements.selectDevice.value = state.deviceId;
+                    }
+                } catch (error) {
+                    console.error('디바이스 목록 조회 실패:', error);
+                }
+            }
+
+            async function startCamera({ deviceId = null, facing = state.facing } = {}) {
+                try {
+                    stopCamera();
+                    
+                    const constraints = deviceId 
+                        ? { video: { deviceId: { exact: deviceId } } }
+                        : { video: { facingMode: facing } };
+                    
+                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    state.stream = stream;
+                    elements.video.srcObject = stream;
+                    
+                    elements.permissionStatus.textContent = '권한: 허용';
+                    elements.permissionStatus.classList.add('active');
+                    setButtonsEnabled(true);
+                    
+                    await listDevices();
+                    
+                    if (deviceId) {
+                        state.deviceId = deviceId;
+                        elements.selectDevice.value = deviceId;
+                    }
+                } catch (error) {
+                    console.error('카메라 시작 실패:', error);
+                    elements.permissionStatus.textContent = '권한: 거부/오류';
+                    elements.permissionStatus.classList.remove('active');
+                    alert('카메라 접근 실패. 브라우저 권한/HTTPS/기기 카메라를 확인하세요.');
+                    setButtonsEnabled(false);
+                }
+            }
+
+            function stopCamera() {
+                if (state.stream) {
+                    state.stream.getTracks().forEach(track => track.stop());
+                    state.stream = null;
+                }
+            }
+
+            function getVideoSize() {
+                const track = state.stream?.getVideoTracks?.()[0];
+                const settings = track?.getSettings?.() || {};
+                return {
+                    width: settings.width || elements.video.videoWidth || 1280,
+                    height: settings.height || elements.video.videoHeight || 720
+                };
+            }
+
+            function drawStickersToCanvas(ctx, width, height) {
+                ctx.save();
+                ctx.font = `${Math.round(Math.min(width, height) * 0.05)}px system-ui`;
+                
+                state.stickers.forEach(sticker => {
+                    const x = sticker.x * width;
+                    const y = sticker.y * height;
+                    
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(sticker.rot * Math.PI / 180);
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(sticker.emoji, 0, 0);
+                    ctx.restore();
+                });
+                
+                ctx.restore();
+            }
+
+            function capturePhoto() {
+                if (!state.stream) return;
+                
+                const { width, height } = getVideoSize();
+                elements.canvas.width = width;
+                elements.canvas.height = height;
+                
+                const ctx = elements.canvas.getContext('2d');
+                
+                // 필터 적용
+                const filter = state.filter === 'none' ? '' : state.filter;
+                const brightness = `brightness(${state.brightness}%)`;
+                ctx.filter = `${filter} ${brightness}`.trim();
+                
+                // 비디오를 캔버스에 그리기
+                ctx.drawImage(elements.video, 0, 0, width, height);
+                
+                // 프레임 효과 적용
+                const frameType = elements.selectFrame.value;
+                if (frameType === 'white') {
+                    ctx.save();
+                    ctx.lineWidth = Math.max(width, height) * 0.04;
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
+                    ctx.strokeRect(ctx.lineWidth / 2, ctx.lineWidth / 2, width - ctx.lineWidth, height - ctx.lineWidth);
+                    ctx.restore();
+                } else if (frameType === 'passport') {
+                    ctx.save();
+                    ctx.lineWidth = Math.max(width, height) * 0.01;
+                    ctx.strokeStyle = 'rgba(167, 139, 250, 0.9)';
+                    ctx.strokeRect(width * 0.16, height * 0.16, width * 0.68, height * 0.68);
+                    ctx.restore();
+                } else if (frameType === 'polaroid') {
+                    ctx.save();
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(0, 0, width, height * 0.08);
+                    ctx.fillRect(0, height * 0.92, width, height * 0.08);
+                    ctx.fillRect(0, 0, width * 0.04, height);
+                    ctx.fillRect(width * 0.96, 0, width * 0.04, height);
+                    ctx.restore();
+                }
+                
+                // 스티커 그리기
+                drawStickersToCanvas(ctx, width, height);
+                
+                const dataUrl = elements.canvas.toDataURL('image/jpeg', 0.92);
+                state.shots.unshift(dataUrl);
+                
+                renderThumbnails();
+                showFlashEffect();
+                showConfettiEffect();
+            }
+
+            function renderThumbnails() {
+                elements.thumbnails.innerHTML = '';
+                
+                state.shots.forEach((src, index) => {
+                    const thumbnail = document.createElement('div');
+                    thumbnail.className = 'thumbnail';
+                    
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.alt = `촬영 사진 ${index + 1}`;
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.textContent = '삭제';
+                    deleteBtn.setAttribute('aria-label', `사진 ${index + 1} 삭제`);
+                    deleteBtn.onclick = () => {
+                        state.shots.splice(index, 1);
+                        renderThumbnails();
+                    };
+                    
+                    thumbnail.appendChild(img);
+                    thumbnail.appendChild(deleteBtn);
+                    elements.thumbnails.appendChild(thumbnail);
+                });
+                
+                updateShotCount();
+                setExportEnabled();
+            }
+
+            function showFlashEffect() {
+                const container = document.getElementById('videoContainer');
+                container.classList.add('flash');
+                setTimeout(() => container.classList.remove('flash'), 350);
+            }
+
+            function showConfettiEffect() {
+                for (let i = 0; i < 10; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.textContent = '💖';
+                    confetti.style.position = 'absolute';
+                    confetti.style.left = `${50 + (Math.random() * 40 - 20)}%`;
+                    confetti.style.top = '45%';
+                    confetti.style.transform = 'translate(-50%, -50%) scale(1)';
+                    confetti.style.filter = 'drop-shadow(0 6px 4px rgba(0,0,0,0.2))';
+                    confetti.style.transition = 'transform 900ms ease, opacity 900ms ease';
+                    
+                    elements.videoOverlay.appendChild(confetti);
+                    
+                    requestAnimationFrame(() => {
+                        confetti.style.transform = `translate(-50%, ${-80 - Math.random() * 80}px) rotate(${Math.random() * 90 - 45}deg)`;
+                        confetti.style.opacity = '0';
+                    });
+                    
+                    setTimeout(() => confetti.remove(), 950);
+                }
+            }
+
+            async function takeWithCountdown(seconds = 3) {
+                if (!state.stream) return;
+                
+                setButtonsEnabled(false);
+                elements.countdown.style.display = 'flex';
+                
+                let count = seconds;
+                const tick = () => {
+                    elements.countdown.textContent = count;
+                    if (count <= 0) {
+                        elements.countdown.style.display = 'none';
+                        capturePhoto();
+                        setButtonsEnabled(true);
+                        return;
+                    }
+                    count--;
+                    setTimeout(tick, 900);
+                };
+                tick();
+            }
+
+            function takeBurst(count = 3, interval = 320) {
+                let current = 0;
+                setButtonsEnabled(false);
+                
+                const takeNext = () => {
+                    if (current >= count) {
+                        setButtonsEnabled(true);
+                        return;
+                    }
+                    capturePhoto();
+                    current++;
+                    setTimeout(takeNext, interval);
+                };
+                
+                takeNext();
+            }
+
+            function makeContactSheet(cols, rows, cellWidth = 600, cellHeight = 800, margin = 20) {
+                if (state.shots.length === 0) return;
+                
+                const totalWidth = cols * cellWidth + (cols + 1) * margin;
+                const totalHeight = rows * cellHeight + (rows + 1) * margin;
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = totalWidth;
+                canvas.height = totalHeight;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, totalWidth, totalHeight);
+                
+                let loaded = 0;
+                let shotIndex = 0;
+                
+                for (let row = 0; row < rows; row++) {
+                    for (let col = 0; col < cols; col++) {
+                        const x = margin + col * (cellWidth + margin);
+                        const y = margin + row * (cellHeight + margin);
+                        const src = state.shots[shotIndex % state.shots.length];
+                        
+                        const img = new Image();
+                        img.onload = () => {
+                            const ratio = Math.max(cellWidth / img.width, cellHeight / img.height);
+                            const drawWidth = img.width * ratio;
+                            const drawHeight = img.height * ratio;
+                            const drawX = x + (cellWidth - drawWidth) / 2;
+                            const drawY = y + (cellHeight - drawHeight) / 2;
+                            
+                            ctx.fillStyle = '#eee';
+                            ctx.fillRect(x, y, cellWidth, cellHeight);
+                            ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+                            
+                            if (++loaded === cols * rows) {
+                                exportToPrint(canvas.toDataURL('image/png'), `${cols}x${rows}`);
+                            }
+                        };
+                        img.src = src;
+                        shotIndex++;
+                    }
+                }
+            }
+
+            function exportToPrint(dataUrl, title = 'sheet') {
+                elements.printArea.innerHTML = `
+                    <div style="padding: 10mm; background: #fff;">
+                        <img src="${dataUrl}" style="width: 100%; height: auto; display: block;" alt="인쇄 미리보기"/>
+                        <div style="margin-top: 6mm; font: 14px system-ui; color: #333;">
+                            Generated: ${new Date().toLocaleString()}
+                        </div>
+                    </div>
+                `;
+                elements.btnPrint.disabled = false;
+            }
+
+            function downloadURI(uri, name) {
+                const link = document.createElement('a');
+                link.href = uri;
+                link.download = name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            function resetToHome() {
+                state.shots = [];
+                state.stickers = [];
+                state.cuteBg = false;
+                state.filter = 'none';
+                state.brightness = 100;
+                
+                renderThumbnails();
+                renderStickers();
+                elements.printArea.innerHTML = '';
+                elements.floatingBg.style.display = 'none';
+                elements.selectFilter.value = 'none';
+                elements.selectFrame.value = 'none';
+                elements.rangeBrightness.value = '100';
+                
+                document.querySelectorAll('.step').forEach((step, index) => {
+                    step.classList.toggle('active', index === 0);
+                });
+                
+                elements.permissionStatus.textContent = '권한: 대기';
+                elements.permissionStatus.classList.remove('active');
+                
+                stopCamera();
+                setButtonsEnabled(false);
+                setExportEnabled();
+                updateShotCount();
+            }
+
+            // ===== 이벤트 리스너 =====
+            elements.btnStart.addEventListener('click', () => startCamera());
+            
+            elements.btnFlip.addEventListener('click', async () => {
+                state.facing = state.facing === 'user' ? 'environment' : 'user';
+                await startCamera({ facing: state.facing });
+            });
+            
+            elements.selectDevice.addEventListener('change', async () => {
+                const deviceId = elements.selectDevice.value;
+                state.deviceId = deviceId;
+                await startCamera({ deviceId });
+            });
+            
+            elements.btnShot.addEventListener('click', capturePhoto);
+            elements.btnBurst.addEventListener('click', () => takeBurst(3, 320));
+            elements.btnTimer.addEventListener('click', () => takeWithCountdown(3));
+            
+            elements.selectFilter.addEventListener('change', applyFilter);
+            elements.rangeBrightness.addEventListener('input', (e) => {
+                state.brightness = parseInt(e.target.value);
+                applyFilter();
+            });
+            elements.selectFrame.addEventListener('change', applyFrame);
+            
+            elements.btnAddSticker.addEventListener('click', () => {
+                const emoji = elements.selectSticker.value;
+                addSticker(emoji);
+            });
+            
+            elements.btnCuteBg.addEventListener('click', toggleCuteBg);
+            
+            elements.btnMakeStrip.addEventListener('click', () => makeContactSheet(1, 4, 700, 500, 24));
+            elements.btnMake2x2.addEventListener('click', () => makeContactSheet(2, 2, 800, 800, 24));
+            elements.btnDownloadAll.addEventListener('click', () => {
+                state.shots.forEach((src, index) => {
+                    downloadURI(src, `photo_${String(index + 1).padStart(2, '0')}.jpg`);
+                });
+            });
+            elements.btnPrint.addEventListener('click', () => window.print());
+            elements.btnClear.addEventListener('click', () => {
+                if (confirm('모든 사진을 삭제할까요?')) {
+                    state.shots = [];
+                    renderThumbnails();
+                    elements.printArea.innerHTML = '';
+                    elements.btnPrint.disabled = true;
+                }
+            });
+            
+            elements.btnHelp.addEventListener('click', () => elements.helpModal.showModal());
+            elements.btnHome.addEventListener('click', resetToHome);
+            
+            // 접근성 토글
+            elements.btnFontSize.addEventListener('click', () => {
+                state.a11yFont = !state.a11yFont;
+                document.body.classList.toggle('a11y-font', state.a11yFont);
+            });
+            
+            elements.btnContrast.addEventListener('click', () => {
+                state.a11yContrast = !state.a11yContrast;
+                document.body.classList.toggle('a11y-contrast', state.a11yContrast);
+            });
+            
+            // 키보드 이벤트
+            window.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key === 'Enter') {
+                    if (!elements.btnShot.disabled) {
+                        e.preventDefault();
+                        capturePhoto();
+                    }
+                }
+                if (e.key === 'Escape') {
+                    if (elements.helpModal.open) {
+                        elements.helpModal.close();
+                    }
+                }
+                if (e.key === 'ArrowLeft') {
+                    elements.btnFlip.click();
+                }
+            });
+
+            // ===== 초기화 =====
+            function init() {
+                // 카메라 API 지원 확인
+                if (!('mediaDevices' in navigator) || !('getUserMedia' in navigator.mediaDevices)) {
+                    alert('이 브라우저는 카메라 API를 지원하지 않습니다.');
+                    return;
+                }
+                
+                // 초기 설정 적용
+                applyFilter();
+                applyFrame();
+                renderStickers();
+                setButtonsEnabled(false);
+                setExportEnabled();
+                updateShotCount();
+                
+                // 디바이스 목록 미리 로드
+                navigator.mediaDevices.enumerateDevices().catch(() => {});
+            }
+
+            // DOM 로드 완료 후 초기화
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+    </script>
+</body>
+</html>

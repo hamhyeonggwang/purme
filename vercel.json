@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "link-it",
   "builds": [
     {
       "src": "package.json",
@@ -14,6 +13,26 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production"
-  }
+    "NEXT_PUBLIC_API_URL": "https://your-domain.vercel.app/api"
+  },
+  "functions": {
+    "app/kiosk-training/photobooth/page.tsx": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/kiosk-training/photobooth",
+      "headers": [
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(self), microphone=(self)"
+        },
+        {
+          "key": "Feature-Policy",
+          "value": "camera 'self'; microphone 'self'"
+        }
+      ]
+    }
+  ]
 }
