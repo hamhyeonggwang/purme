@@ -35,10 +35,10 @@ export default function PhotoBoothKiosk() {
   })
 
   const themes = [
-    { id: 'classic', name: '클래식', color: 'bg-gray-600', icon: '📷' },
-    { id: 'romantic', name: '로맨틱', color: 'bg-pink-600', icon: '💕' },
-    { id: 'funky', name: '펑키', color: 'bg-purple-600', icon: '🎵' },
-    { id: 'cute', name: '귀여운', color: 'bg-yellow-600', icon: '🐰' }
+    { id: 'classic', name: '클래식', color: 'bg-slate-600', icon: '📷' },
+    { id: 'romantic', name: '로맨틱', color: 'bg-rose-600', icon: '💕' },
+    { id: 'funky', name: '펑키', color: 'bg-violet-600', icon: '🎵' },
+    { id: 'cute', name: '귀여운', color: 'bg-emerald-600', icon: '🐰' }
   ]
 
   const peopleOptions = ['1명', '2명', '3명', '4명']
@@ -266,23 +266,23 @@ export default function PhotoBoothKiosk() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-800 to-pink-600">
+    <div className="min-h-screen bg-gradient-to-br from-slate-800 to-slate-600">
       {/* 헤더 */}
-      <header className="bg-pink-900/90 backdrop-blur-sm border-b border-pink-400 sticky top-0 z-50">
+      <header className="bg-slate-900/90 backdrop-blur-sm border-b border-slate-400 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Link href="/kiosk-training" className="text-pink-200 hover:text-pink-100">
+              <Link href="/kiosk-training" className="text-slate-200 hover:text-slate-100">
                 <ArrowLeft className="w-6 h-6" />
               </Link>
               <div>
-                <h1 className="text-xl font-bold text-pink-100">포토부스 키오스크</h1>
-                <p className="text-sm text-pink-200">인생네컷 촬영</p>
+                <h1 className="text-xl font-bold text-slate-100">포토부스 키오스크</h1>
+                <p className="text-sm text-slate-200">인생네컷 촬영</p>
               </div>
             </div>
             <button
               onClick={resetGame}
-              className="bg-pink-600 hover:bg-pink-700 text-pink-100 px-4 py-2 rounded-lg transition-colors"
+              className="bg-slate-600 hover:bg-slate-700 text-slate-100 px-4 py-2 rounded-lg transition-colors"
             >
               다시 시작
             </button>

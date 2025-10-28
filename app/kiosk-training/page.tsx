@@ -622,14 +622,14 @@ export default function KioskTrainingPage() {
         }
       case 'photobooth':
         return {
-          background: 'bg-gradient-to-br from-pink-800 to-pink-600',
-          cardBackground: 'bg-pink-700',
-          buttonColor: 'bg-pink-600 hover:bg-pink-700',
-          textColor: 'text-pink-100',
-          accentColor: 'border-pink-400',
-          iconBg: 'bg-pink-500',
+          background: 'bg-gradient-to-br from-slate-800 to-slate-600',
+          cardBackground: 'bg-slate-700',
+          buttonColor: 'bg-slate-600 hover:bg-slate-700',
+          textColor: 'text-slate-100',
+          accentColor: 'border-slate-400',
+          iconBg: 'bg-slate-500',
           machineBg: 'bg-gray-800',
-          screenBg: 'bg-pink-900',
+          screenBg: 'bg-slate-900',
           cardSlot: 'bg-gray-600',
           keypad: 'bg-gray-700'
         }
@@ -805,142 +805,79 @@ export default function KioskTrainingPage() {
             animate={{ y: 0, opacity: 1 }}
             className="text-center"
           >
-            {/* 키오스크 기계 전체 */}
-            <div className={`max-w-4xl mx-auto rounded-3xl shadow-2xl p-8 ${getKioskLayout(gameState.currentTraining.theme).background}`}>
-              {/* 키오스크 상단 로고 */}
-              <div className="text-center mb-6">
-                <div className="text-4xl mb-2">{gameState.currentTraining.icon}</div>
-                <h3 className={`text-2xl font-bold ${getKioskLayout(gameState.currentTraining.theme).textColor}`}>
+            {/* 깔끔한 키오스크 훈련 화면 */}
+            <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+              {/* 헤더 */}
+              <div className="text-center mb-8">
+                <div className="text-6xl mb-4">{gameState.currentTraining.icon}</div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-2">
                   {gameState.currentTraining.name}
                 </h3>
-                <p className={`text-sm ${getKioskLayout(gameState.currentTraining.theme).textColor} opacity-80`}>
+                <p className="text-lg text-gray-600 mb-4">
                   단계 {gameState.currentStep + 1} / {gameState.currentTraining.steps.length}
                 </p>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-mint-500 to-lavender-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${((gameState.currentStep + 1) / gameState.currentTraining.steps.length) * 100}%` }}
+                  ></div>
+                </div>
               </div>
 
-              {/* 키오스크 기계 본체 */}
-              <div className={`rounded-2xl p-6 ${getKioskLayout(gameState.currentTraining.theme).machineBg} shadow-inner`}>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  
-                  {/* 왼쪽: 카드 투입구 및 키패드 */}
-                  <div className="space-y-4">
-                    {/* 카드 투입구 */}
-                    <div className="text-center">
-                      <div className={`w-32 h-20 mx-auto rounded-lg border-2 border-dashed ${getKioskLayout(gameState.currentTraining.theme).cardSlot} flex items-center justify-center mb-2`}>
-                        <span className="text-gray-400 text-sm">💳</span>
-                      </div>
-                      <p className={`text-xs ${getKioskLayout(gameState.currentTraining.theme).textColor} opacity-70`}>카드 투입구</p>
-                    </div>
-
-                    {/* 키패드 */}
-                    <div className={`rounded-lg p-4 ${getKioskLayout(gameState.currentTraining.theme).keypad}`}>
-                      <p className={`text-xs text-center mb-3 ${getKioskLayout(gameState.currentTraining.theme).textColor} opacity-70`}>키패드</p>
-                      <div className="grid grid-cols-3 gap-2">
-                        {[1,2,3,4,5,6,7,8,9,'*',0,'#'].map((key) => (
-                          <button
-                            key={key}
-                            onClick={() => handleTouchAction('pin-pad')}
-                            className={`w-8 h-8 rounded text-xs font-bold ${getKioskLayout(gameState.currentTraining!.theme).buttonColor} ${getKioskLayout(gameState.currentTraining!.theme).textColor} hover:opacity-80 transition-opacity`}
-                          >
-                            {key}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* 현금 투입구 (ATM용) */}
-                    {gameState.currentTraining.theme === 'atm' && (
-                      <div className="text-center">
-                        <div className={`w-24 h-16 mx-auto rounded-lg border-2 border-dashed ${getKioskLayout(gameState.currentTraining.theme).cardSlot} flex items-center justify-center mb-2`}>
-                          <span className="text-gray-400 text-sm">💰</span>
-                        </div>
-                        <p className={`text-xs ${getKioskLayout(gameState.currentTraining.theme).textColor} opacity-70`}>현금 투입구</p>
-                      </div>
-                    )}
-
-                    {/* 스캐너 (도서관/약국용) */}
-                    {(gameState.currentTraining.theme === 'library' || gameState.currentTraining.theme === 'pharmacy') && (
-                      <div className="text-center">
-                        <div className={`w-32 h-20 mx-auto rounded-lg border-2 border-dashed ${getKioskLayout(gameState.currentTraining.theme).cardSlot} flex items-center justify-center mb-2`}>
-                          <span className="text-gray-400 text-sm">📄</span>
-                        </div>
-                        <p className={`text-xs ${getKioskLayout(gameState.currentTraining.theme).textColor} opacity-70`}>스캔 영역</p>
-                      </div>
+              {/* 메인 훈련 화면 */}
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-8 min-h-[400px] flex items-center justify-center">
+                <div className="text-center w-full">
+                  {/* 현재 단계 지시사항 */}
+                  <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
+                    <h4 className="text-xl font-semibold text-gray-900 mb-3">
+                      {gameState.currentTraining.steps[gameState.currentStep].instruction}
+                    </h4>
+                    {gameState.currentTraining.steps[gameState.currentStep].feedback && (
+                      <p className="text-gray-600">
+                        {gameState.currentTraining.steps[gameState.currentStep].feedback}
+                      </p>
                     )}
                   </div>
 
-                  {/* 가운데: 메인 화면 */}
-                  <div className="lg:col-span-2">
-                    <div className={`rounded-xl p-6 ${getKioskLayout(gameState.currentTraining.theme).screenBg} border-2 ${getKioskLayout(gameState.currentTraining.theme).accentColor}`}>
-                      {/* 현재 단계 지시사항 */}
-                      <div className={`border rounded-lg p-4 mb-6 ${getKioskLayout(gameState.currentTraining.theme).accentColor} ${getKioskLayout(gameState.currentTraining.theme).cardBackground}`}>
-                        <h4 className={`text-lg font-semibold mb-2 ${getKioskLayout(gameState.currentTraining.theme).textColor}`}>
-                          {gameState.currentTraining.steps[gameState.currentStep].instruction}
-                        </h4>
-                        <p className={getKioskLayout(gameState.currentTraining.theme).textColor}>
-                          {gameState.currentTraining.steps[gameState.currentStep].feedback}
-                        </p>
-                      </div>
-
-                      {/* 화면 버튼들 */}
-                      <div className="grid grid-cols-2 gap-4">
-                        {gameState.currentTraining.steps[gameState.currentStep].options ? (
-                          // 선택형 질문
-                          gameState.currentTraining.steps[gameState.currentStep].options!.map((option, index) => (
-                            <button
-                              key={index}
-                              onClick={() => handleOptionSelect(option)}
-                              className={`p-4 rounded-lg border-2 transition-all duration-200 ${
-                                selectedOption === option
-                                  ? `${getKioskLayout(gameState.currentTraining!.theme).buttonColor} text-white border-current`
-                                  : `bg-white text-gray-700 border-gray-300 hover:border-current hover:bg-opacity-20`
-                              }`}
-                            >
-                              {option}
-                            </button>
-                          ))
-                        ) : (
-                          // 터치 액션
-                          <div className="col-span-2 grid grid-cols-3 gap-4">
-                            <button
-                              onClick={() => handleTouchAction('card-slot')}
-                              className={`p-4 rounded-lg hover:opacity-80 transition-colors ${getKioskLayout(gameState.currentTraining!.theme).buttonColor} ${getKioskLayout(gameState.currentTraining!.theme).textColor}`}
-                            >
-                              💳 카드삽입구
-                            </button>
-                            <button
-                              onClick={() => handleTouchAction('pin-pad')}
-                              className={`p-4 rounded-lg hover:opacity-80 transition-colors ${getKioskLayout(gameState.currentTraining!.theme).buttonColor} ${getKioskLayout(gameState.currentTraining!.theme).textColor}`}
-                            >
-                              🔢 PIN패드
-                            </button>
-                            <button
-                              onClick={() => handleTouchAction('confirm-button')}
-                              className={`p-4 rounded-lg hover:opacity-80 transition-colors ${getKioskLayout(gameState.currentTraining!.theme).buttonColor} ${getKioskLayout(gameState.currentTraining!.theme).textColor}`}
-                            >
-                              ✅ 확인
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                  {/* 선택 옵션들 */}
+                  {gameState.currentTraining.steps[gameState.currentStep].options ? (
+                    <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
+                      {gameState.currentTraining.steps[gameState.currentStep].options!.map((option, index) => (
+                        <motion.button
+                          key={index}
+                          onClick={() => handleOptionSelect(option)}
+                          className={`p-6 rounded-xl border-2 transition-all duration-200 font-medium ${
+                            selectedOption === option
+                              ? 'bg-gradient-to-r from-mint-500 to-lavender-500 text-white border-transparent shadow-lg'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-mint-400 hover:shadow-md'
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          {option}
+                        </motion.button>
+                      ))}
                     </div>
-                  </div>
-                </div>
-
-                {/* 키오스크 하단 기능 버튼들 */}
-                <div className="mt-6 flex justify-center space-x-4">
-                  <button className={`px-6 py-2 rounded-lg ${getKioskLayout(gameState.currentTraining.theme).buttonColor} ${getKioskLayout(gameState.currentTraining.theme).textColor} text-sm`}>
-                    취소
-                  </button>
-                  <button className={`px-6 py-2 rounded-lg ${getKioskLayout(gameState.currentTraining.theme).buttonColor} ${getKioskLayout(gameState.currentTraining.theme).textColor} text-sm`}>
-                    도움말
-                  </button>
-                  <button className={`px-6 py-2 rounded-lg ${getKioskLayout(gameState.currentTraining.theme).buttonColor} ${getKioskLayout(gameState.currentTraining.theme).textColor} text-sm`}>
-                    언어변경
-                  </button>
+                  ) : (
+                    /* 터치 액션 */
+                    <div className="max-w-md mx-auto">
+                      <motion.div 
+                        className="w-32 h-32 mx-auto rounded-full border-4 border-dashed border-mint-400 flex items-center justify-center mb-6 bg-white shadow-lg"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleTouchAction('screen')}
+                      >
+                        <span className="text-4xl">{gameState.currentTraining.steps[gameState.currentStep].target}</span>
+                      </motion.div>
+                      <p className="text-gray-600 text-lg">
+                        화면을 터치하세요
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
+
           </motion.div>
         )}
 
