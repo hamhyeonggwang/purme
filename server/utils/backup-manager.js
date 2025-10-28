@@ -3,14 +3,17 @@ const path = require('path')
 const mongoose = require('mongoose')
 const User = require('../models/User')
 const TrainingSession = require('../models/TrainingSession')
-const { exec } = require('child_process')
-const { promisify } = require('util')
 
-const execAsync = promisify(exec)
+// Vercel에서는 파일 시스템 접근이 제한되므로 조건부 실행
+const isVercel = process.env.VERCEL === '1'
+const isProduction = process.env.NODE_ENV === 'production'
 
 class BackupManager {
   constructor() {
-    this.backupDir = path.join(__dirname, '../../backups')
+    // Vercel에서는 임시 디렉토리 사용
+    this.backupDir = isVercel 
+      ? path.join('/tmp', 'backups')
+      : path.join(__dirname, '../../backups')
     this.maxBackups = 10 // 최대 백업 파일 수
   }
 
@@ -25,8 +28,12 @@ class BackupManager {
     }
   }
 
-  // 전체 데이터베이스 백업 (MongoDB 덤프)
+  // 전체 데이터베이스 백업 (MongoDB 덤프) - Vercel에서는 제한됨
   async createDatabaseBackup() {
+    if (isVercel) {
+      throw new Error('MongoDB 덤프는 Vercel 환경에서 지원되지 않습니다. JSON 백업을 사용해주세요.')
+    }
+
     try {
       await this.initializeBackupDir()
       
@@ -34,13 +41,17 @@ class BackupManager {
       const backupFileName = `mongodb-backup-${timestamp}.gz`
       const backupPath = path.join(this.backupDir, backupFileName)
 
-      // MongoDB 덤프 명령어
+      // MongoDB 덤프 명령어 (로컬 환경에서만)
       const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/linkit'
       const dbName = mongoUri.split('/').pop()
       
       const dumpCommand = `mongodump --uri="${mongoUri}" --archive="${backupPath}" --gzip`
       
       console.log('🔄 데이터베이스 백업 시작...')
+      const { exec } = require('child_process')
+      const { promisify } = require('util')
+      const execAsync = promisify(exec)
+      
       await execAsync(dumpCommand)
       
       console.log(`✅ 데이터베이스 백업 완료: ${backupFileName}`)
@@ -276,14 +287,22 @@ class BackupManager {
     }
   }
 
-  // MongoDB 덤프 복원
+  // MongoDB 덤프 복원 - Vercel에서는 제한됨
   async restoreDatabaseBackup(backupPath, options = {}) {
+    if (isVercel) {
+      throw new Error('MongoDB 복원은 Vercel 환경에서 지원되지 않습니다. JSON 복원을 사용해주세요.')
+    }
+
     try {
       const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/linkit'
       
       const restoreCommand = `mongorestore --uri="${mongoUri}" --archive="${backupPath}" --gzip --drop`
       
       console.log('🔄 데이터베이스 복원 시작...')
+      const { exec } = require('child_process')
+      const { promisify } = require('util')
+      const execAsync = promisify(exec)
+      
       await execAsync(restoreCommand)
       
       console.log('✅ 데이터베이스 복원 완료')

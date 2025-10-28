@@ -11,6 +11,7 @@ const {
 const authRoutes = require('./routes/auth')
 const adminRoutes = require('./routes/admin')
 const trainingRoutes = require('./routes/training')
+const backupRoutes = require('./routes/backup')
 
 // 간단한 라우터 (MongoDB 없이 사용)
 const simpleAuthRoutes = require('./routes/simple-auth')
@@ -57,6 +58,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/training', trainingRoutes)
+app.use('/api/backup', backupRoutes)
 
 // 404 처리
 app.use((req, res) => {
@@ -78,8 +80,8 @@ app.use((error, req, res, next) => {
   })
 })
 
-// 서버 시작
-app.listen(PORT, () => {
+// 서버 시작 (Vercel 호환)
+const server = app.listen(PORT, () => {
   console.log(`🚀 Link IT Backend Server running on port ${PORT}`)
   console.log(`📊 Health check: http://localhost:${PORT}/api/health`)
   console.log(`🔗 Frontend: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`)
@@ -88,4 +90,13 @@ app.listen(PORT, () => {
   console.log(`🔐 Admin Login: admin / admin123!`) // 관리자 계정 안내
 })
 
+// Vercel에서 graceful shutdown 처리
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully')
+  server.close(() => {
+    console.log('Process terminated')
+  })
+})
+
+// Vercel 함수로 export
 module.exports = app
