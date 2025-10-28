@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, RefreshCw, Lightbulb, CheckCircle, RotateCcw } from 'lucide-react'
+import { ArrowLeft, RefreshCw, Lightbulb, CheckCircle } from 'lucide-react'
 
 interface Disk {
   size: number

@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, RefreshCw, Lightbulb, CheckCircle, RotateCcw } from 'lucide-react'
+import { ArrowLeft, RefreshCw, Lightbulb, CheckCircle } from 'lucide-react'
 
 interface WordPosition {
   word: string
@@ -229,7 +229,7 @@ export default function WordSearchGame() {
       const randomWord = unfoundWords[Math.floor(Math.random() * unfoundWords.length)]
       
       // 힌트로 첫 글자 하이라이트
-      const hintCells = []
+      const hintCells: {row: number, col: number}[] = []
       const direction = [
         randomWord.endRow - randomWord.startRow,
         randomWord.endCol - randomWord.startCol

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, RefreshCw, Lightbulb, CheckCircle, RotateCcw } from 'lucide-react'
+import { ArrowLeft, RefreshCw, Lightbulb, CheckCircle } from 'lucide-react'
 
 interface PicrossCell {
   isFilled: boolean
@@ -38,8 +38,6 @@ export default function PicrossGame() {
     endTime: null,
     hintsUsed: 0
   })
-  const [selectedCell, setSelectedCell] = useState<{row: number, col: number} | null>(null)
-  const [showInstructions, setShowInstructions] = useState(true)
   const [currentTool, setCurrentTool] = useState<'fill' | 'mark'>('fill')
 
   // 노노그램 힌트 생성
