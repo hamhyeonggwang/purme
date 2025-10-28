@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, RotateCcw, Lightbulb, CheckCircle, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Lightbulb, CheckCircle, RefreshCw } from 'lucide-react'
 
 interface SudokuCell {
   value: number | null
@@ -149,7 +150,7 @@ export default function SudokuGame() {
       }
     }
     
-    shuffleArray(positions as any)
+    shuffleArray(positions as {row: number, col: number}[])
     
     // 일부 셀만 보여주기
     for (let i = 0; i < cellsToRemove; i++) {
@@ -476,7 +477,7 @@ export default function SudokuGame() {
           </div>
           <div className="text-center mt-4">
             <button
-              onClick={() => selectedCell && handleNumberInput(null as any)}
+              onClick={() => selectedCell && handleNumberInput(null as number)}
               disabled={!selectedCell}
               className="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg transition-colors"
             >
