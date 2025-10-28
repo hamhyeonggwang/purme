@@ -39,6 +39,7 @@ export default function PicrossGame() {
     hintsUsed: 0
   })
   const [currentTool, setCurrentTool] = useState<'fill' | 'mark'>('fill')
+  const [showInstructions, setShowInstructions] = useState(true)
 
   // 노노그램 힌트 생성
   const generateHints = (solution: boolean[][]): {rowHints: number[][], colHints: number[][]} => {

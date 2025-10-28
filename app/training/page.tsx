@@ -613,13 +613,13 @@ export default function CognitiveLearningTrainingPage() {
                   className={`bg-white rounded-2xl p-6 shadow-lg border-2 transition-all duration-300 hover:shadow-xl transform hover:scale-105 ${getColorClasses(game.color)}`}
                 >
                   {/* 게임 아이콘과 제목 */}
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="text-3xl">{game.icon}</div>
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-900">{game.category}</h3>
-                      <p className="text-sm text-gray-600">{game.description}</p>
-                    </div>
-                  </div>
+       <div className="flex items-center space-x-3 mb-4">
+         <div className="text-3xl">{game.icon}</div>
+         <div>
+           <h3 className="text-lg font-bold text-gray-900">{game.name}</h3>
+           <p className="text-sm text-gray-600">{game.description}</p>
+         </div>
+       </div>
 
 
                   {/* 게임 정보 */}
