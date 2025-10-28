@@ -72,6 +72,17 @@ const games = [
     duration: '10-20분',
     color: 'mint',
     implemented: true
+  },
+  {
+    id: 'sudoku',
+    name: '스도쿠',
+    category: '추론 및 문제해결',
+    description: '논리적 사고와 집중력을 향상시키는 숫자 퍼즐',
+    icon: '🔢',
+    difficulty: '중급',
+    duration: '15-30분',
+    color: 'mint',
+    implemented: true
   }
 ]
 
