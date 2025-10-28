@@ -84,240 +84,120 @@ export default function KioskTrainingPage() {
     setSelectedOption(null)
   }
 
-  // 키오스크 훈련 데이터
+  // 키오스크 훈련 데이터 - 6개 시나리오
   const kioskTrainings: KioskTraining[] = [
     {
-      id: 'atm-basic',
-      name: 'ATM 기본 조작',
-      description: 'ATM 화면에서 기본적인 금융 서비스를 이용하는 방법을 학습합니다',
-      icon: '🏧',
+      id: 'cafe',
+      name: '카페 주문',
+      description: '음료 주문부터 결제까지 실제 카페 키오스크를 체험해보세요',
+      icon: '☕',
       difficulty: 'beginner',
-      duration: 5,
-      category: 'touch',
-      theme: 'atm',
-      steps: [
-        {
-          id: 'step1',
-          instruction: '카드를 삽입하세요',
-          action: 'tap',
-          target: 'card-slot',
-          feedback: '카드 삽입구를 터치하세요'
-        },
-        {
-          id: 'step2',
-          instruction: 'PIN 번호를 입력하세요',
-          action: 'tap',
-          target: 'pin-pad',
-          feedback: '숫자 패드를 터치하여 PIN을 입력하세요'
-        },
-        {
-          id: 'step3',
-          instruction: '원하는 서비스를 선택하세요',
-          action: 'select',
-          options: ['현금 인출', '잔액 조회', '이체', '예금'],
-          feedback: '화면에서 원하는 서비스를 선택하세요'
-        },
-        {
-          id: 'step4',
-          instruction: '금액을 입력하세요',
-          action: 'tap',
-          target: 'amount-input',
-          feedback: '원하는 금액을 입력하세요'
-        },
-        {
-          id: 'step5',
-          instruction: '확인 버튼을 누르세요',
-          action: 'tap',
-          target: 'confirm-button',
-          feedback: '거래를 확인하세요'
-        }
-      ]
-    },
-    {
-      id: 'hospital-kiosk',
-      name: '병원 키오스크',
-      description: '병원에서 접수 및 예약을 위한 키오스크 사용법을 학습합니다',
-      icon: '🏥',
-      difficulty: 'intermediate',
       duration: 8,
-      category: 'navigation',
-      theme: 'hospital',
-      steps: [
-        {
-          id: 'step1',
-          instruction: '방문 목적을 선택하세요',
-          action: 'select',
-          options: ['초진 예약', '재진 예약', '접수', '검사 결과 조회'],
-          feedback: '원하는 서비스를 선택하세요'
-        },
-        {
-          id: 'step2',
-          instruction: '환자 정보를 입력하세요',
-          action: 'tap',
-          target: 'patient-info',
-          feedback: '주민등록번호나 환자번호를 입력하세요'
-        },
-        {
-          id: 'step3',
-          instruction: '진료과를 선택하세요',
-          action: 'select',
-          options: ['내과', '외과', '소아과', '산부인과', '정신과'],
-          feedback: '원하는 진료과를 선택하세요'
-        },
-        {
-          id: 'step4',
-          instruction: '예약 가능한 시간을 선택하세요',
-          action: 'tap',
-          target: 'time-slot',
-          feedback: '원하는 시간대를 선택하세요'
-        },
-        {
-          id: 'step5',
-          instruction: '예약을 확정하세요',
-          action: 'tap',
-          target: 'confirm-reservation',
-          feedback: '예약 정보를 확인하고 확정하세요'
-        }
-      ]
-    },
-    {
-      id: 'shopping-kiosk',
-      name: '쇼핑몰 키오스크',
-      description: '쇼핑몰에서 상품 주문 및 결제를 위한 키오스크 사용법을 학습합니다',
-      icon: '🛍️',
-      difficulty: 'advanced',
-      duration: 10,
       category: 'touch',
-      theme: 'shopping',
+      theme: 'cafe',
       steps: [
         {
           id: 'step1',
-          instruction: '카테고리를 선택하세요',
-          action: 'select',
-          options: ['음식', '음료', '디저트', '세트메뉴'],
-          feedback: '원하는 카테고리를 선택하세요'
+          instruction: '메뉴를 선택하세요',
+          action: 'tap',
+          target: 'menu-item',
+          feedback: '원하는 음료를 터치하세요'
         },
         {
           id: 'step2',
-          instruction: '상품을 선택하세요',
-          action: 'tap',
-          target: 'product-list',
-          feedback: '원하는 상품을 터치하세요'
+          instruction: '옵션을 선택하세요',
+          action: 'select',
+          options: ['사이즈', '온도', '추가옵션'],
+          feedback: '사이즈와 온도를 선택하세요'
         },
         {
           id: 'step3',
-          instruction: '수량을 조절하세요',
+          instruction: '장바구니를 확인하세요',
           action: 'tap',
-          target: 'quantity-control',
-          feedback: '+ 또는 - 버튼으로 수량을 조절하세요'
+          target: 'cart',
+          feedback: '주문 내용을 확인하세요'
         },
         {
           id: 'step4',
-          instruction: '장바구니에 추가하세요',
+          instruction: '픽업 이름을 입력하세요',
           action: 'tap',
-          target: 'add-to-cart',
-          feedback: '장바구니에 추가 버튼을 누르세요'
+          target: 'name-input',
+          feedback: '픽업할 이름을 입력하세요'
         },
         {
           id: 'step5',
           instruction: '결제 방법을 선택하세요',
           action: 'select',
-          options: ['카드 결제', '현금 결제', '모바일 결제'],
+          options: ['카드 결제', 'QR 결제', '현금 결제'],
           feedback: '원하는 결제 방법을 선택하세요'
         },
         {
           id: 'step6',
-          instruction: '주문을 완료하세요',
+          instruction: '영수증을 확인하세요',
           action: 'tap',
-          target: 'complete-order',
-          feedback: '주문 완료 버튼을 누르세요'
+          target: 'receipt',
+          feedback: '주문 완료 영수증을 확인하세요'
         }
       ]
     },
     {
-      id: 'library-kiosk',
-      name: '도서관 키오스크',
-      description: '도서관에서 도서 대출/반납을 위한 키오스크 사용법을 학습합니다',
-      icon: '📚',
-      difficulty: 'beginner',
-      duration: 6,
-      category: 'touch',
-      theme: 'library',
-      steps: [
-        {
-          id: 'step1',
-          instruction: '서비스를 선택하세요',
-          action: 'select',
-          options: ['도서 대출', '도서 반납', '연장 신청', '예약 조회'],
-          feedback: '원하는 서비스를 선택하세요'
-        },
-        {
-          id: 'step2',
-          instruction: '회원증을 스캔하세요',
-          action: 'tap',
-          target: 'card-scanner',
-          feedback: '회원증을 스캔 영역에 올려주세요'
-        },
-        {
-          id: 'step3',
-          instruction: '도서를 스캔하세요',
-          action: 'tap',
-          target: 'book-scanner',
-          feedback: '도서의 바코드를 스캔하세요'
-        },
-        {
-          id: 'step4',
-          instruction: '확인 버튼을 누르세요',
-          action: 'tap',
-          target: 'confirm-button',
-          feedback: '대출/반납을 확인하세요'
-        }
-      ]
-    },
-    {
-      id: 'pharmacy-kiosk',
-      name: '약국 키오스크',
-      description: '약국에서 처방전 접수 및 약품 조회를 위한 키오스크 사용법을 학습합니다',
-      icon: '💊',
+      id: 'restaurant',
+      name: '식당 주문',
+      description: '음식 주문부터 호출벨까지 식당 키오스크를 체험해보세요',
+      icon: '🍽️',
       difficulty: 'intermediate',
-      duration: 7,
-      category: 'navigation',
-      theme: 'pharmacy',
+      duration: 10,
+      category: 'touch',
+      theme: 'restaurant',
       steps: [
         {
           id: 'step1',
-          instruction: '서비스를 선택하세요',
+          instruction: '카테고리를 선택하세요',
           action: 'select',
-          options: ['처방전 접수', '약품 조회', '복용법 안내', '예약 조회'],
-          feedback: '원하는 서비스를 선택하세요'
+          options: ['메인 요리', '면류', '밥류', '사이드'],
+          feedback: '원하는 음식 카테고리를 선택하세요'
         },
         {
           id: 'step2',
-          instruction: '처방전을 스캔하세요',
+          instruction: '메뉴를 선택하세요',
           action: 'tap',
-          target: 'prescription-scanner',
-          feedback: '처방전을 스캔 영역에 올려주세요'
+          target: 'menu-item',
+          feedback: '원하는 음식을 터치하세요'
         },
         {
           id: 'step3',
-          instruction: '환자 정보를 확인하세요',
-          action: 'tap',
-          target: 'patient-info',
-          feedback: '화면에 표시된 환자 정보를 확인하세요'
+          instruction: '매장/포장을 선택하세요',
+          action: 'select',
+          options: ['매장 식사', '포장'],
+          feedback: '매장에서 드실지 포장할지 선택하세요'
         },
         {
           id: 'step4',
-          instruction: '접수를 완료하세요',
+          instruction: '주문을 확인하세요',
           action: 'tap',
-          target: 'complete-button',
-          feedback: '접수 완료 버튼을 누르세요'
+          target: 'order-summary',
+          feedback: '주문 내용을 확인하세요'
+        },
+        {
+          id: 'step5',
+          instruction: '결제를 완료하세요',
+          action: 'tap',
+          target: 'payment',
+          feedback: '결제를 완료하세요'
+        },
+        {
+          id: 'step6',
+          instruction: '호출벨 번호를 확인하세요',
+          action: 'tap',
+          target: 'bell-number',
+          feedback: '호출벨 번호를 확인하세요'
         }
       ]
     },
     {
-      id: 'photobooth-kiosk',
-      name: '포토부스 키오스크',
-      description: '인생네컷처럼 포토부스에서 사진 촬영 및 출력을 위한 키오스크 사용법을 학습합니다',
+      id: 'photobooth',
+      name: '포토부스',
+      description: '사진 촬영부터 인쇄까지 포토부스 키오스크를 체험해보세요',
       icon: '📸',
       difficulty: 'beginner',
       duration: 8,
@@ -326,45 +206,193 @@ export default function KioskTrainingPage() {
       steps: [
         {
           id: 'step1',
-          instruction: '테마를 선택하세요',
+          instruction: '레이아웃을 선택하세요',
           action: 'select',
-          options: ['클래식', '로맨틱', '펑키', '귀여운'],
-          feedback: '원하는 포토 테마를 선택하세요'
+          options: ['2컷', '4컷', '증명사진'],
+          feedback: '원하는 사진 레이아웃을 선택하세요'
         },
         {
           id: 'step2',
-          instruction: '인원수를 선택하세요',
-          action: 'select',
-          options: ['1명', '2명', '3명', '4명'],
-          feedback: '촬영할 인원수를 선택하세요'
+          instruction: '사진을 촬영하세요',
+          action: 'tap',
+          target: 'camera',
+          feedback: '카메라를 맞추고 촬영하세요'
         },
         {
           id: 'step3',
-          instruction: '결제 방법을 선택하세요',
-          action: 'select',
-          options: ['카드 결제', '현금 결제', '모바일 결제'],
-          feedback: '원하는 결제 방법을 선택하세요'
+          instruction: '편집을 하세요',
+          action: 'tap',
+          target: 'edit',
+          feedback: '필터와 프레임을 선택하세요'
         },
         {
           id: 'step4',
-          instruction: '촬영을 시작하세요',
+          instruction: '인쇄/저장을 하세요',
           action: 'tap',
-          target: 'start-photo',
-          feedback: '촬영 시작 버튼을 누르세요'
+          target: 'print-save',
+          feedback: '인쇄하거나 저장하세요'
+        }
+      ]
+    },
+    {
+      id: 'train',
+      name: '기차표 예매',
+      description: '기차표 예매부터 승차권까지 기차역 키오스크를 체험해보세요',
+      icon: '🚄',
+      difficulty: 'intermediate',
+      duration: 12,
+      category: 'navigation',
+      theme: 'train',
+      steps: [
+        {
+          id: 'step1',
+          instruction: '출발지와 도착지를 선택하세요',
+          action: 'tap',
+          target: 'station-select',
+          feedback: '출발지와 도착지를 선택하세요'
+        },
+        {
+          id: 'step2',
+          instruction: '날짜와 시간을 선택하세요',
+          action: 'tap',
+          target: 'datetime-select',
+          feedback: '여행 날짜와 시간을 선택하세요'
+        },
+        {
+          id: 'step3',
+          instruction: '열차를 선택하세요',
+          action: 'tap',
+          target: 'train-select',
+          feedback: '원하는 열차를 선택하세요'
+        },
+        {
+          id: 'step4',
+          instruction: '좌석을 선택하세요',
+          action: 'tap',
+          target: 'seat-select',
+          feedback: '원하는 좌석을 선택하세요'
         },
         {
           id: 'step5',
-          instruction: '사진을 선택하세요',
+          instruction: '승객 정보를 입력하세요',
           action: 'tap',
-          target: 'select-photos',
-          feedback: '마음에 드는 사진을 선택하세요'
+          target: 'passenger-info',
+          feedback: '승객 정보를 입력하세요'
         },
         {
           id: 'step6',
-          instruction: '출력을 완료하세요',
+          instruction: '승차권을 확인하세요',
           action: 'tap',
-          target: 'print-photos',
-          feedback: '사진 출력 완료 버튼을 누르세요'
+          target: 'ticket',
+          feedback: '승차권을 확인하세요'
+        }
+      ]
+    },
+    {
+      id: 'civil',
+      name: '민원발급',
+      description: '민원서류 발급 신청부터 완료까지 민원센터 키오스크를 체험해보세요',
+      icon: '🏛️',
+      difficulty: 'advanced',
+      duration: 15,
+      category: 'navigation',
+      theme: 'civil',
+      steps: [
+        {
+          id: 'step1',
+          instruction: '업무를 선택하세요',
+          action: 'select',
+          options: ['주민등록등본', '가족관계증명서', '납세증명서', '소득증명서'],
+          feedback: '발급받을 서류를 선택하세요'
+        },
+        {
+          id: 'step2',
+          instruction: '신청자 구분을 선택하세요',
+          action: 'select',
+          options: ['본인', '대리인'],
+          feedback: '본인인지 대리인인지 선택하세요'
+        },
+        {
+          id: 'step3',
+          instruction: '본인인증을 하세요',
+          action: 'tap',
+          target: 'identity-verification',
+          feedback: '신분증을 촬영하거나 정보를 입력하세요'
+        },
+        {
+          id: 'step4',
+          instruction: '발급 설정을 하세요',
+          action: 'tap',
+          target: 'issue-config',
+          feedback: '발급 옵션을 설정하세요'
+        },
+        {
+          id: 'step5',
+          instruction: '수수료를 결제하세요',
+          action: 'tap',
+          target: 'fee-payment',
+          feedback: '수수료를 결제하세요'
+        },
+        {
+          id: 'step6',
+          instruction: '미리보기를 확인하세요',
+          action: 'tap',
+          target: 'preview',
+          feedback: '발급될 서류를 확인하세요'
+        }
+      ]
+    },
+    {
+      id: 'delivery',
+      name: '배달앱 주문',
+      description: '배달 주문부터 추적까지 배달앱 키오스크를 체험해보세요',
+      icon: '🚚',
+      difficulty: 'intermediate',
+      duration: 10,
+      category: 'touch',
+      theme: 'delivery',
+      steps: [
+        {
+          id: 'step1',
+          instruction: '주소를 입력하세요',
+          action: 'tap',
+          target: 'address-input',
+          feedback: '배달받을 주소를 입력하세요'
+        },
+        {
+          id: 'step2',
+          instruction: '매장을 선택하세요',
+          action: 'tap',
+          target: 'store-select',
+          feedback: '원하는 매장을 선택하세요'
+        },
+        {
+          id: 'step3',
+          instruction: '메뉴를 선택하세요',
+          action: 'tap',
+          target: 'menu-select',
+          feedback: '메뉴를 선택하고 장바구니에 담으세요'
+        },
+        {
+          id: 'step4',
+          instruction: '주문을 확인하세요',
+          action: 'tap',
+          target: 'order-confirm',
+          feedback: '주문 내용을 확인하세요'
+        },
+        {
+          id: 'step5',
+          instruction: '결제를 완료하세요',
+          action: 'tap',
+          target: 'payment',
+          feedback: '결제를 완료하세요'
+        },
+        {
+          id: 'step6',
+          instruction: '주문을 추적하세요',
+          action: 'tap',
+          target: 'order-tracking',
+          feedback: '주문 상태를 확인하세요'
         }
       ]
     }
@@ -494,52 +522,52 @@ export default function KioskTrainingPage() {
 
   const getModernThemeStyles = (theme: string) => {
     switch (theme) {
-      case 'atm':
+      case 'cafe':
         return {
-          cardBg: 'bg-gradient-to-br from-blue-50 to-blue-100',
-          iconBg: 'bg-blue-200',
-          textColor: 'text-blue-800',
-          buttonBg: 'bg-blue-500 hover:bg-blue-600',
-          buttonText: 'text-white'
-        }
-      case 'hospital':
-        return {
-          cardBg: 'bg-gradient-to-br from-emerald-50 to-emerald-100',
-          iconBg: 'bg-emerald-200',
-          textColor: 'text-emerald-800',
-          buttonBg: 'bg-emerald-500 hover:bg-emerald-600',
-          buttonText: 'text-white'
-        }
-      case 'shopping':
-        return {
-          cardBg: 'bg-gradient-to-br from-violet-50 to-violet-100',
-          iconBg: 'bg-violet-200',
-          textColor: 'text-violet-800',
-          buttonBg: 'bg-violet-500 hover:bg-violet-600',
-          buttonText: 'text-white'
-        }
-      case 'library':
-        return {
-          cardBg: 'bg-gradient-to-br from-amber-50 to-amber-100',
+          cardBg: 'bg-gradient-to-br from-amber-50 to-orange-100',
           iconBg: 'bg-amber-200',
           textColor: 'text-amber-800',
           buttonBg: 'bg-amber-500 hover:bg-amber-600',
           buttonText: 'text-white'
         }
-      case 'pharmacy':
+      case 'restaurant':
         return {
-          cardBg: 'bg-gradient-to-br from-rose-50 to-rose-100',
-          iconBg: 'bg-rose-200',
-          textColor: 'text-rose-800',
-          buttonBg: 'bg-rose-500 hover:bg-rose-600',
+          cardBg: 'bg-gradient-to-br from-emerald-50 to-green-100',
+          iconBg: 'bg-emerald-200',
+          textColor: 'text-emerald-800',
+          buttonBg: 'bg-emerald-500 hover:bg-emerald-600',
           buttonText: 'text-white'
         }
       case 'photobooth':
         return {
-          cardBg: 'bg-gradient-to-br from-pink-50 to-pink-100',
+          cardBg: 'bg-gradient-to-br from-pink-50 to-rose-100',
           iconBg: 'bg-pink-200',
           textColor: 'text-pink-800',
           buttonBg: 'bg-pink-500 hover:bg-pink-600',
+          buttonText: 'text-white'
+        }
+      case 'train':
+        return {
+          cardBg: 'bg-gradient-to-br from-blue-50 to-indigo-100',
+          iconBg: 'bg-blue-200',
+          textColor: 'text-blue-800',
+          buttonBg: 'bg-blue-500 hover:bg-blue-600',
+          buttonText: 'text-white'
+        }
+      case 'civil':
+        return {
+          cardBg: 'bg-gradient-to-br from-slate-50 to-gray-100',
+          iconBg: 'bg-slate-200',
+          textColor: 'text-slate-800',
+          buttonBg: 'bg-slate-500 hover:bg-slate-600',
+          buttonText: 'text-white'
+        }
+      case 'delivery':
+        return {
+          cardBg: 'bg-gradient-to-br from-violet-50 to-purple-100',
+          iconBg: 'bg-violet-200',
+          textColor: 'text-violet-800',
+          buttonBg: 'bg-violet-500 hover:bg-violet-600',
           buttonText: 'text-white'
         }
       default:
@@ -762,7 +790,7 @@ export default function KioskTrainingPage() {
             >
               <RotateCcw className="w-4 h-4" />
               <span>초기화</span>
-            </button>
+                </button>
           </div>
         </div>
       </header>
@@ -786,15 +814,15 @@ export default function KioskTrainingPage() {
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg text-center border border-mint-200/50">
               <div className="text-2xl font-bold text-yellow-600">{Math.floor(gameState.timeLeft / 60)}:{(gameState.timeLeft % 60).toString().padStart(2, '0')}</div>
               <div className="text-sm text-gray-600 mt-1">시간</div>
-            </div>
+          </div>
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg text-center border border-mint-200/50">
               <div className="text-2xl font-bold text-mint-600">{gameState.totalAnswers > 0 ? Math.round((gameState.correctAnswers / gameState.totalAnswers) * 100) : 0}%</div>
               <div className="text-sm text-gray-600 mt-1">정확도</div>
-            </div>
+                </div>
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg text-center border border-mint-200/50">
               <div className="text-2xl font-bold text-lavender-600">{gameState.streak}</div>
               <div className="text-sm text-gray-600 mt-1">연속</div>
-            </div>
+              </div>
           </motion.div>
         )}
 
@@ -823,7 +851,7 @@ export default function KioskTrainingPage() {
                   ></div>
                 </div>
               </div>
-
+              
               {/* 메인 훈련 화면 */}
               <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-8 min-h-[400px] flex items-center justify-center">
                 <div className="text-center w-full">
@@ -837,8 +865,8 @@ export default function KioskTrainingPage() {
                         {gameState.currentTraining.steps[gameState.currentStep].feedback}
                       </p>
                     )}
-                  </div>
-
+              </div>
+              
                   {/* 선택 옵션들 */}
                   {gameState.currentTraining.steps[gameState.currentStep].options ? (
                     <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
@@ -857,7 +885,7 @@ export default function KioskTrainingPage() {
                           {option}
                         </motion.button>
                       ))}
-                    </div>
+              </div>
                   ) : (
                     /* 터치 액션 */
                     <div className="max-w-md mx-auto">
@@ -872,7 +900,7 @@ export default function KioskTrainingPage() {
                       <p className="text-gray-600 text-lg">
                         화면을 터치하세요
                       </p>
-                    </div>
+              </div>
                   )}
                 </div>
               </div>
@@ -897,7 +925,7 @@ export default function KioskTrainingPage() {
                 <p className="text-xl font-semibold text-gray-800">
                   {feedbackMessage}
                 </p>
-              </div>
+                  </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -922,7 +950,7 @@ export default function KioskTrainingPage() {
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600">{gameState.totalAnswers > 0 ? Math.round((gameState.correctAnswers / gameState.totalAnswers) * 100) : 0}%</div>
                   <div className="text-sm text-gray-600">정확도</div>
-                </div>
+                  </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-600">{gameState.maxStreak}</div>
                   <div className="text-sm text-gray-600">최대 연속</div>
@@ -994,7 +1022,7 @@ export default function KioskTrainingPage() {
                     <p className="text-mint-700 text-sm">
                       🎯 실제 키오스크 사용법을 단계별로 학습해보세요!
                     </p>
-                  </div>
+        </div>
                 </div>
 
                 {/* 훈련 목록 */}
@@ -1024,10 +1052,12 @@ export default function KioskTrainingPage() {
                              training.difficulty === 'intermediate' ? '중급' : '고급'}
                           </span>
                           <span className={`text-sm ${themeStyles.textColor} opacity-70`}>⏱️ {training.duration}분</span>
-                        </div>
+              </div>
                         <button
                           onClick={() => {
-                            if (training.id === 'photobooth-kiosk') {
+                            if (training.id === 'cafe') {
+                              window.location.href = '/kiosk-training/cafe'
+                            } else if (training.id === 'photobooth') {
                               window.location.href = '/kiosk-training/photobooth'
                             } else {
                               startTraining(training)
@@ -1040,7 +1070,7 @@ export default function KioskTrainingPage() {
                       </motion.div>
                     )
                   })}
-                </div>
+              </div>
               </div>
             ) : (
               <div className="text-center">
