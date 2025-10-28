@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
-import { useAuth } from '@/components/providers/AuthProvider'
-import { trainingAPI } from '@/lib/api'
-import toast from 'react-hot-toast'
+import Image from 'next/image'
 
 // 키오스크 훈련 타입
 interface KioskTraining {
@@ -36,7 +34,6 @@ interface GameState {
   timeLeft: number
   gameStarted: boolean
   gameCompleted: boolean
-  sessionId: string | null
   startTime: number | null
   correctAnswers: number
   totalAnswers: number
@@ -45,9 +42,6 @@ interface GameState {
 }
 
 export default function KioskTrainingPage() {
-  // const router = useRouter() // 사용하지 않음
-  const { user } = useAuth()
-  
   const [gameState, setGameState] = useState<GameState>({
     currentTraining: null,
     currentStep: 0,
@@ -55,7 +49,6 @@ export default function KioskTrainingPage() {
     timeLeft: 300,
     gameStarted: false,
     gameCompleted: false,
-    sessionId: null,
     startTime: null,
     correctAnswers: 0,
     totalAnswers: 0,
@@ -218,42 +211,26 @@ export default function KioskTrainingPage() {
   ]
 
   // 훈련 시작
-  const startTraining = async (training: KioskTraining) => {
-    try {
-      const sessionResponse = await trainingAPI.startSession({
-        training_type: 'kiosk',
-        module: training.id,
-        difficulty: training.difficulty
-      })
-
-      setGameState(prev => ({
-        ...prev,
-        currentTraining: training,
-        currentStep: 0,
-        gameStarted: true,
-        timeLeft: training.duration * 60,
-        score: 0,
-        correctAnswers: 0,
-        totalAnswers: 0,
-        sessionId: sessionResponse.session_id.toString(),
-        startTime: Date.now(),
-        streak: 0,
-        maxStreak: 0
-      }))
-      setShowInstructions(false)
-
-      toast.success(`${training.name} 훈련이 시작되었습니다!`)
-    } catch (error) {
-      console.error('Failed to start training session:', error)
-      toast.error('훈련 세션 시작에 실패했습니다. 다시 시도해주세요.')
-    }
+  const startTraining = (training: KioskTraining) => {
+    setGameState(prev => ({
+      ...prev,
+      currentTraining: training,
+      currentStep: 0,
+      gameStarted: true,
+      timeLeft: training.duration * 60,
+      score: 0,
+      correctAnswers: 0,
+      totalAnswers: 0,
+      startTime: Date.now(),
+      streak: 0,
+      maxStreak: 0
+    }))
+    setShowInstructions(false)
   }
 
   // 단계 완료 처리
   const completeStep = (isCorrect: boolean) => {
     if (!gameState.currentTraining) return
-
-    // const currentStepData = gameState.currentTraining.steps[gameState.currentStep] // 사용하지 않음
     
     setGameState(prev => ({
       ...prev,
@@ -284,6 +261,23 @@ export default function KioskTrainingPage() {
           ...prev,
           gameCompleted: true
         }))
+        
+        // 게임 결과를 로컬 스토리지에 저장
+        try {
+          const gameHistory = JSON.parse(localStorage.getItem('gameHistory') || '[]')
+          gameHistory.push({
+            game: 'kiosk-training',
+            training: gameState.currentTraining?.name,
+            timestamp: new Date().toISOString(),
+            score: gameState.score,
+            accuracy: Math.round((gameState.correctAnswers / gameState.totalAnswers) * 100),
+            duration: gameState.currentTraining?.duration,
+            maxStreak: gameState.maxStreak
+          })
+          localStorage.setItem('gameHistory', JSON.stringify(gameHistory.slice(-50)))
+        } catch (error) {
+          console.log('게임 결과 저장 실패:', error)
+        }
       }
     }, 1500)
   }
@@ -332,28 +326,58 @@ export default function KioskTrainingPage() {
   const accuracy = gameState.totalAnswers > 0 ? Math.round((gameState.correctAnswers / gameState.totalAnswers) * 100) : 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-mint-50 via-lavender-50 to-yellow-50">
       {/* 헤더 */}
-      <header className="bg-white shadow-lg border-b-4 border-blue-200">
+      <header className="bg-white/90 backdrop-blur-sm border-b border-mint-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
+            {/* 로고 */}
             <div className="flex items-center space-x-3">
-              <Link href="/training" className="text-blue-500 hover:text-blue-600">
-                <ArrowLeft className="w-6 h-6" />
-              </Link>
+              <Image
+                src="/images/link-it-logo-small.png"
+                alt="Link IT 로고"
+                width={40}
+                height={40}
+                className="w-10 h-10"
+              />
               <div>
-                <h1 className="text-xl font-bold text-blue-600">키오스크 훈련</h1>
-                <p className="text-sm text-gray-600">실제 키오스크 사용법 학습</p>
+                <h1 className="text-2xl font-bold text-gray-900">Link IT</h1>
+                <p className="text-xs text-gray-500">키오스크 훈련</p>
               </div>
             </div>
+
+            {/* 네비게이션 */}
             <div className="flex items-center space-x-4">
-              <button
-                onClick={() => window.location.reload()}
-                className="btn-secondary text-sm"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                다시 시작
+              <Link href="/" className="text-gray-700 hover:text-mint-600 font-medium transition-colors">
+                홈
+              </Link>
+              <div className="relative group">
+                <button className="text-gray-700 hover:text-lavender-600 font-medium transition-colors flex items-center">
+                  훈련
+                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="py-2">
+                    <Link href="/basic-training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-mint-50 hover:text-mint-600 transition-colors">
+                      기초훈련
+                    </Link>
+                    <Link href="/training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-lavender-50 hover:text-lavender-600 transition-colors">
+                      인지훈련
+                    </Link>
+                    <Link href="/kiosk-training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
+                      키오스크훈련
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              <Link href="/program" className="text-gray-700 hover:text-mint-600 font-medium transition-colors">
+                프로그램
+              </Link>
+              <Link href="/evaluation" className="text-gray-700 hover:text-lavender-600 font-medium transition-colors">
+                평가
+              </Link>
             </div>
           </div>
         </div>
@@ -367,26 +391,26 @@ export default function KioskTrainingPage() {
             animate={{ y: 0, opacity: 1 }}
             className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
           >
-            <div className="card text-center">
+            <div className="bg-white rounded-xl p-4 shadow-lg text-center">
               <div className="text-2xl font-bold text-blue-600">{gameState.currentStep + 1}/{gameState.currentTraining?.steps.length}</div>
               <div className="text-sm text-gray-600">단계</div>
             </div>
-            <div className="card text-center">
-              <div className="text-2xl font-bold text-success-600">{gameState.score}</div>
+            <div className="bg-white rounded-xl p-4 shadow-lg text-center">
+              <div className="text-2xl font-bold text-green-600">{gameState.score}</div>
               <div className="text-sm text-gray-600">점수</div>
             </div>
-            <div className="card text-center">
-              <div className="text-2xl font-bold text-warning-600">{Math.floor(gameState.timeLeft / 60)}:{(gameState.timeLeft % 60).toString().padStart(2, '0')}</div>
+            <div className="bg-white rounded-xl p-4 shadow-lg text-center">
+              <div className="text-2xl font-bold text-yellow-600">{Math.floor(gameState.timeLeft / 60)}:{(gameState.timeLeft % 60).toString().padStart(2, '0')}</div>
               <div className="text-sm text-gray-600">시간</div>
             </div>
-            <div className="card text-center">
-              <div className="text-2xl font-bold text-secondary-600">{accuracy}%</div>
+            <div className="bg-white rounded-xl p-4 shadow-lg text-center">
+              <div className="text-2xl font-bold text-purple-600">{accuracy}%</div>
               <div className="text-sm text-gray-600">정확도</div>
             </div>
-            <div className="card text-center">
-              <div className="text-2xl font-bold text-purple-600">{gameState.streak}</div>
+            <div className="bg-white rounded-xl p-4 shadow-lg text-center">
+              <div className="text-2xl font-bold text-indigo-600">{gameState.streak}</div>
               <div className="text-sm text-gray-600">연속</div>
-          </div>
+            </div>
           </motion.div>
         )}
 
@@ -491,37 +515,37 @@ export default function KioskTrainingPage() {
             animate={{ scale: 1, opacity: 1 }}
             className="text-center"
           >
-            <div className="card mb-8">
+            <div className="bg-white rounded-2xl p-8 shadow-lg mb-8">
               <div className="text-6xl mb-6">🎉</div>
               <h2 className="text-3xl font-bold text-blue-600 mb-6">
                 훈련 완료!
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="text-center">
-                  <div className="text-2xl font-bold text-success-600">{gameState.score}</div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">{gameState.score}</div>
                   <div className="text-sm text-gray-600">최종 점수</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600">{accuracy}%</div>
                   <div className="text-sm text-gray-600">정확도</div>
-              </div>
+                </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-600">{gameState.maxStreak}</div>
                   <div className="text-sm text-gray-600">최대 연속</div>
-            </div>
+                </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-warning-600">{Math.floor((Date.now() - (gameState.startTime || 0)) / 1000)}초</div>
+                  <div className="text-2xl font-bold text-yellow-600">{Math.floor((Date.now() - (gameState.startTime || 0)) / 1000)}초</div>
                   <div className="text-sm text-gray-600">소요 시간</div>
-          </div>
+                </div>
               </div>
               <div className="flex space-x-4 justify-center">
                 <button
                   onClick={() => window.location.reload()}
-                  className="btn-primary"
+                  className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-lg"
                 >
                   다시 하기
                 </button>
-                <Link href="/training" className="btn-secondary">
+                <Link href="/training" className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-lg">
                   훈련 목록
                 </Link>
               </div>
@@ -536,29 +560,9 @@ export default function KioskTrainingPage() {
             animate={{ y: 0, opacity: 1 }}
             className="text-center"
           >
-            {!user ? (
-              <div className="max-w-md mx-auto">
-                <div className="card mb-8">
-                  <div className="text-6xl mb-6">🔐</div>
-                  <h2 className="text-3xl font-bold text-blue-600 mb-6">
-                    로그인이 필요합니다
-                  </h2>
-                  <p className="text-lg text-gray-700 mb-6">
-                    훈련 결과를 저장하고 진행률을 추적하려면 로그인해주세요.
-                  </p>
-                  <div className="flex space-x-4">
-                    <Link href="/" className="btn-primary flex-1">
-                      로그인하기
-                    </Link>
-                    <Link href="/training" className="btn-secondary flex-1">
-                      뒤로 가기
-                    </Link>
-              </div>
-                </div>
-              </div>
-            ) : showInstructions ? (
+            {showInstructions ? (
               <div className="max-w-4xl mx-auto">
-                <div className="card mb-8">
+                <div className="bg-white rounded-2xl p-8 shadow-lg mb-8">
                   <div className="text-6xl mb-6">🖥️</div>
                   <h2 className="text-3xl font-bold text-blue-600 mb-6">
                     키오스크 훈련
@@ -587,8 +591,8 @@ export default function KioskTrainingPage() {
                         <span className="text-blue-600 font-bold text-sm">4</span>
                       </div>
                       <p>실제 상황에서 <span className="text-purple-600 font-bold">자신감</span>을 갖고 키오스크를 사용할 수 있습니다!</p>
-            </div>
-          </div>
+                    </div>
+                  </div>
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
                     <p className="text-blue-700 text-sm">
                       🎯 실제 키오스크 사용법을 단계별로 학습해보세요!
@@ -605,10 +609,10 @@ export default function KioskTrainingPage() {
                     >
                       <div className="text-4xl mb-4">{training.icon}</div>
                       <h3 className="text-xl font-bold text-gray-900 mb-2">{training.name}</h3>
-                <p className="text-gray-700 mb-4 text-sm leading-relaxed">
-                  {training.description}
-                </p>
-                <div className="flex items-center justify-between mb-4">
+                      <p className="text-gray-700 mb-4 text-sm leading-relaxed">
+                        {training.description}
+                      </p>
+                      <div className="flex items-center justify-between mb-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                           training.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
                           training.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
@@ -616,18 +620,18 @@ export default function KioskTrainingPage() {
                         }`}>
                           {training.difficulty === 'beginner' ? '초급' :
                            training.difficulty === 'intermediate' ? '중급' : '고급'}
-                  </span>
+                        </span>
                         <span className="text-sm text-gray-600">⏱️ {training.duration}분</span>
-                  </div>
+                      </div>
                       <button
                         onClick={() => startTraining(training)}
                         className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-lg"
                       >
-                  훈련 시작
-                </button>
-              </div>
-            ))}
-          </div>
+                        훈련 시작
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="text-center">
@@ -640,7 +644,7 @@ export default function KioskTrainingPage() {
                 </p>
                 <button
                   onClick={() => setShowInstructions(true)}
-                  className="btn-primary"
+                  className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-4 px-8 rounded-lg transition-colors shadow-lg"
                 >
                   시작하기
                 </button>

@@ -4,9 +4,6 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
-import { useAuth } from '@/components/providers/AuthProvider'
-import { trainingAPI } from '@/lib/api'
-import toast from 'react-hot-toast'
 
 interface GridCell {
   id: string
@@ -93,14 +90,9 @@ export default function SpatialRelationshipPage() {
     return targets
   }
 
-  const startGame = async () => {
+  const startGame = () => {
     try {
       // 백엔드에 훈련 세션 시작
-      const sessionResponse = await trainingAPI.startSession({
-        training_type: 'basic',
-        module: 'spatial_relationship',
-        difficulty: 'beginner'
-      })
 
       const gridSize = Math.min(3 + gameState.currentLevel - 1, 10) // 레벨마다 그리드 크기 증가
       const grid = generateGrid(gridSize)
@@ -116,7 +108,7 @@ export default function SpatialRelationshipPage() {
         score: 0,
         correctAnswers: 0,
         totalAnswers: 0,
-        sessionId: sessionResponse.session_id.toString(),
+        sessionId: Date.now().toString(),
         startTime: Date.now(),
         showTargets: false,
         reactionTimes: [],
@@ -127,10 +119,8 @@ export default function SpatialRelationshipPage() {
       // 첫 번째 타겟 표시
       showNextTarget()
 
-      toast.success('공간관계 인식 훈련이 시작되었습니다!')
     } catch (error) {
       console.error('Failed to start training session:', error)
-      toast.error('훈련 세션 시작에 실패했습니다. 다시 시도해주세요.')
     }
   }
 
@@ -242,16 +232,23 @@ export default function SpatialRelationshipPage() {
   //   ? gameState.reactionTimes.reduce((sum, time) => sum + time, 0) / gameState.reactionTimes.length 
   //   : 0 // 사용하지 않음
 
-      await trainingAPI.completeSession(gameState.sessionId, {
-        score: gameState.score,
-        accuracy: Math.round(accuracy),
-        time_spent: Math.round(timeSpent / 1000) // 초 단위로 변환
-      })
-
-      toast.success('훈련 결과가 저장되었습니다!')
+      // 게임 결과를 로컬 스토리지에 저장
+      try {
+        const gameHistory = JSON.parse(localStorage.getItem("gameHistory") || "[]")
+        gameHistory.push({
+          game: "spatial-relationship",
+          timestamp: new Date().toISOString(),
+          score: gameState.score,
+          accuracy: Math.round(accuracy),
+          timeSpent: Math.round(timeSpent / 1000),
+          level: gameState.currentLevel
+        })
+        localStorage.setItem("gameHistory", JSON.stringify(gameHistory.slice(-50)))
+      } catch (error) {
+        console.log("게임 결과 저장 실패:", error)
+      }
     } catch (error) {
       console.error('Failed to save game results:', error)
-      toast.error('결과 저장에 실패했습니다.')
     }
   }
 

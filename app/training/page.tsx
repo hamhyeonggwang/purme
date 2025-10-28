@@ -8,6 +8,61 @@ import Link from 'next/link'
 const games = [
   // 시지각 및 공간 처리
   {
+    id: 'pet-finder',
+    name: '애완동물 찾기',
+    category: '시지각 및 공간 처리',
+    description: '시각적 탐색과 주의력을 향상시킵니다',
+    icon: '🐕',
+    difficulty: '초급',
+    duration: '5-10분',
+    color: 'mint',
+    implemented: true
+  },
+  {
+    id: 'memory-match',
+    name: '짝 맞추기',
+    category: '기억력 및 작업기억',
+    description: '기억력과 인식 능력을 훈련합니다',
+    icon: '🧠',
+    difficulty: '초급',
+    duration: '10-15분',
+    color: 'yellow',
+    implemented: true
+  },
+  {
+    id: 'fruit-frenzy',
+    name: 'Fruit Frenzy',
+    category: '주의집중 및 선택적 주의',
+    description: '빠른 반응과 선택적 주의를 훈련합니다',
+    icon: '🍎',
+    difficulty: '초급',
+    duration: '5-10분',
+    color: 'lavender',
+    implemented: true
+  },
+  {
+    id: 'marble-race',
+    name: '마블 레이스',
+    category: '주의집중 및 선택적 주의',
+    description: '지속적 주의와 반응 속도를 향상시킵니다',
+    icon: '🔴',
+    difficulty: '중급',
+    duration: '10-15분',
+    color: 'lavender',
+    implemented: true
+  },
+  {
+    id: 'pipe-panic',
+    name: 'Pipe Panic',
+    category: '추론 및 문제해결',
+    description: '논리적 연결과 문제해결 능력을 훈련합니다',
+    icon: '🔧',
+    difficulty: '중급',
+    duration: '15-25분',
+    color: 'mint',
+    implemented: true
+  },
+  {
     id: '3d-puzzle',
     name: '3D 퍼즐',
     category: '시지각 및 공간 처리',
@@ -56,41 +111,8 @@ const upcomingGames = [
     color: 'mint',
     implemented: false
   },
-  {
-    id: 'pet-finder',
-    name: '애완동물 찾기',
-    category: '시지각 및 공간 처리',
-    description: '시각적 탐색과 주의력을 향상시킵니다',
-    icon: '🐕',
-    difficulty: '초급',
-    duration: '5-10분',
-    color: 'mint',
-    implemented: false
-  },
 
   // 주의집중 및 선택적 주의
-  {
-    id: 'fruit-frenzy',
-    name: 'Fruit Frenzy',
-    category: '주의집중 및 선택적 주의',
-    description: '빠른 반응과 선택적 주의를 훈련합니다',
-    icon: '🍎',
-    difficulty: '초급',
-    duration: '5-10분',
-    color: 'lavender',
-    implemented: false
-  },
-  {
-    id: 'marble-race',
-    name: '마블 레이스',
-    category: '주의집중 및 선택적 주의',
-    description: '지속적 주의와 반응 속도를 향상시킵니다',
-    icon: '🔴',
-    difficulty: '중급',
-    duration: '10-15분',
-    color: 'lavender',
-    implemented: false
-  },
   {
     id: 'melody-tennis',
     name: '멜로디 테니스',
@@ -126,17 +148,6 @@ const upcomingGames = [
   },
 
   // 기억력 및 작업기억
-  {
-    id: 'memory-match',
-    name: '짝 맞추기',
-    category: '기억력 및 작업기억',
-    description: '기억력과 인식 능력을 훈련합니다',
-    icon: '🧠',
-    difficulty: '초급',
-    duration: '10-15분',
-    color: 'yellow',
-    implemented: false
-  },
   {
     id: 'memory-games',
     name: '기억력 게임',
@@ -183,17 +194,6 @@ const upcomingGames = [
   },
 
   // 추론 및 문제해결
-  {
-    id: 'pipe-panic',
-    name: 'Pipe Panic',
-    category: '추론 및 문제해결',
-    description: '논리적 연결과 문제해결 능력을 훈련합니다',
-    icon: '🔧',
-    difficulty: '중급',
-    duration: '15-25분',
-    color: 'mint',
-    implemented: false
-  },
   {
     id: 'crystal-miner',
     name: 'Crystal Miner',
@@ -402,9 +402,6 @@ export default function TrainingPage() {
               <Link href="/evaluation" className="text-gray-700 hover:text-lavender-600 font-medium transition-colors">
                 평가
               </Link>
-              <Link href="/admin" className="text-gray-700 hover:text-mint-600 font-medium transition-colors">
-                관리자
-              </Link>
             </div>
           </div>
         </div>
@@ -508,7 +505,7 @@ export default function TrainingPage() {
 
                   {/* 시작 버튼 */}
                   <Link 
-                    href={game.id === '3d-puzzle' ? '/training/3d-puzzle' : '#'}
+                    href={`/training/${game.id}`}
                     className="w-full bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-lg block text-center"
                   >
                     게임 시작

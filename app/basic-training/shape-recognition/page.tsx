@@ -4,9 +4,6 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
-import { useAuth } from '@/components/providers/AuthProvider'
-import { trainingAPI } from '@/lib/api'
-import toast from 'react-hot-toast'
 
 interface Shape {
   id: string
@@ -73,14 +70,9 @@ export default function ShapeRecognitionPage() {
     return options[Math.floor(Math.random() * options.length)]
   }
 
-  const startGame = async () => {
+  const startGame = () => {
     try {
       // 백엔드에 훈련 세션 시작
-      const sessionResponse = await trainingAPI.startSession({
-        training_type: 'basic',
-        module: 'shape_recognition',
-        difficulty: 'beginner'
-      })
 
       const shapeOptions = generateShapeOptions(gameState.currentLevel)
       const targetShape = selectTargetShape(shapeOptions)
@@ -94,15 +86,13 @@ export default function ShapeRecognitionPage() {
         score: 0,
         correctAnswers: 0,
         totalAnswers: 0,
-        sessionId: sessionResponse.session_id.toString(),
+        sessionId: Date.now().toString(),
         startTime: Date.now()
       }))
       setShowInstructions(false)
 
-      toast.success('모양 찾기 훈련이 시작되었습니다!')
     } catch (error) {
       console.error('Failed to start training session:', error)
-      toast.error('훈련 세션 시작에 실패했습니다. 다시 시도해주세요.')
     }
   }
 
@@ -149,16 +139,23 @@ export default function ShapeRecognitionPage() {
       const timeSpent = gameState.startTime ? Date.now() - gameState.startTime : 0
       const accuracy = gameState.totalAnswers > 0 ? (gameState.correctAnswers / gameState.totalAnswers) * 100 : 0
 
-      await trainingAPI.completeSession(gameState.sessionId, {
-        score: gameState.score,
-        accuracy: Math.round(accuracy),
-        time_spent: Math.round(timeSpent / 1000) // 초 단위로 변환
-      })
-
-      toast.success('훈련 결과가 저장되었습니다!')
+      // 게임 결과를 로컬 스토리지에 저장
+      try {
+        const gameHistory = JSON.parse(localStorage.getItem("gameHistory") || "[]")
+        gameHistory.push({
+          game: "spatial-relationship",
+          timestamp: new Date().toISOString(),
+          score: gameState.score,
+          accuracy: Math.round(accuracy),
+          timeSpent: Math.round(timeSpent / 1000),
+          level: gameState.currentLevel
+        })
+        localStorage.setItem("gameHistory", JSON.stringify(gameHistory.slice(-50)))
+      } catch (error) {
+        console.log("게임 결과 저장 실패:", error)
+      }
     } catch (error) {
       console.error('Failed to save game results:', error)
-      toast.error('결과 저장에 실패했습니다.')
     }
   }
 

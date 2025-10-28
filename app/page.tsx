@@ -2,26 +2,8 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
-import { useAuth } from '@/components/providers/AuthProvider'
-import { LoginForm, RegisterForm } from '@/components/auth/AuthForms'
-import toast from 'react-hot-toast'
 
 export default function HomePage() {
-  const { user, logout } = useAuth()
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  const [isLoginMode, setIsLoginMode] = useState(true)
-
-  const handleAuthSuccess = () => {
-    setShowAuthModal(false)
-    toast.success(isLoginMode ? '로그인 성공!' : '회원가입 완료!')
-  }
-
-  const handleLogout = () => {
-    logout()
-    toast.success('로그아웃 되었습니다')
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-mint-50 via-lavender-50 to-yellow-50">
       {/* 헤더 - CogniFit 스타일 */}
@@ -80,51 +62,17 @@ export default function HomePage() {
               </Link>
             </nav>
 
-            {/* 로그인 버튼 */}
+            {/* 게스트 모드 표시 */}
             <div className="flex items-center space-x-4">
-              <Link href="/admin" className="text-gray-700 hover:text-mint-600 font-medium transition-colors">
-                관리자
+              <div className="text-sm text-gray-600 bg-mint-100 px-3 py-1 rounded-full">
+                🎮 게스트 모드
+              </div>
+              <Link
+                href="/basic-training"
+                className="bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-lg"
+              >
+                시작하기
               </Link>
-              {user ? (
-                <>
-                  <Link
-                    href="/dashboard"
-                    className="bg-mint-500 hover:bg-mint-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                  >
-                    내 대시보드
-                  </Link>
-                  <span className="text-sm text-gray-600">
-                    {user.name}님
-                  </span>
-                  <button
-                    onClick={handleLogout}
-                    className="text-gray-700 hover:text-mint-600 font-medium transition-colors"
-                  >
-                    로그아웃
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      setIsLoginMode(true)
-                      setShowAuthModal(true)
-                    }}
-                    className="text-gray-700 hover:text-mint-600 font-medium transition-colors"
-                  >
-                    로그인
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsLoginMode(false)
-                      setShowAuthModal(true)
-                    }}
-                    className="bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-lg"
-                  >
-                    시작하기
-                  </button>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -169,12 +117,12 @@ export default function HomePage() {
                   <p className="text-sm text-gray-600 mt-2">데이터 기반 맞춤형 인지재활 솔루션</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <button className="bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors shadow-lg">
+                  <Link href="/basic-training" className="bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors shadow-lg text-center">
                     시작하기
-                  </button>
-                  <button className="border-2 border-mint-500 text-mint-600 hover:bg-mint-500 hover:text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors">
+                  </Link>
+                  <Link href="/training" className="border-2 border-mint-500 text-mint-600 hover:bg-mint-500 hover:text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors text-center">
                     데모 보기
-                  </button>
+                  </Link>
                 </div>
               </div>
 
@@ -434,12 +382,12 @@ export default function HomePage() {
               혁신을 경험해보세요
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-mint-600 hover:bg-gray-100 font-bold py-4 px-8 rounded-lg text-lg transition-colors shadow-lg">
+              <Link href="/basic-training" className="bg-white text-mint-600 hover:bg-gray-100 font-bold py-4 px-8 rounded-lg text-lg transition-colors shadow-lg text-center">
                 시작하기
-              </button>
-              <button className="border-2 border-white text-white hover:bg-white hover:text-mint-600 font-bold py-4 px-8 rounded-lg text-lg transition-colors">
+              </Link>
+              <Link href="/training" className="border-2 border-white text-white hover:bg-white hover:text-mint-600 font-bold py-4 px-8 rounded-lg text-lg transition-colors text-center">
                 상담 문의
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -495,39 +443,6 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-
-      {/* 인증 모달 */}
-      {showAuthModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  {isLoginMode ? '로그인' : '회원가입'}
-                </h2>
-                <button
-                  onClick={() => setShowAuthModal(false)}
-                  className="text-gray-400 hover:text-gray-600 text-2xl"
-                >
-                  ×
-                </button>
-              </div>
-              
-              {isLoginMode ? (
-                <LoginForm 
-                  onSuccess={handleAuthSuccess}
-                  onSwitchToRegister={() => setIsLoginMode(false)}
-                />
-              ) : (
-                <RegisterForm 
-                  onSuccess={handleAuthSuccess}
-                  onSwitchToLogin={() => setIsLoginMode(true)}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

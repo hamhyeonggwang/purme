@@ -1,12 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
-import { useAuth } from '@/components/providers/AuthProvider'
-import { trainingAPI } from '@/lib/api'
-import toast from 'react-hot-toast'
 
 interface GameState {
   currentRound: number
@@ -14,7 +11,6 @@ interface GameState {
   reactionTimes: number[]
   gameStarted: boolean
   gameCompleted: boolean
-  sessionId: string | null
   startTime: number | null
   showMouse: boolean
   mouseAppearTime: number | null
@@ -23,15 +19,12 @@ interface GameState {
 }
 
 export default function ReactionSpeedPage() {
-  // const router = useRouter() // 사용하지 않음
-  const { user } = useAuth()
   const [gameState, setGameState] = useState<GameState>({
     currentRound: 1,
     totalRounds: 5,
     reactionTimes: [],
     gameStarted: false,
     gameCompleted: false,
-    sessionId: null,
     startTime: null,
     showMouse: false,
     mouseAppearTime: null,
@@ -39,44 +32,34 @@ export default function ReactionSpeedPage() {
     averageReactionTime: 0
   })
 
-  const [showInstructions, setShowInstructions] = useState(true)
-  const [showFeedback, setShowFeedback] = useState(false)
-  const [feedbackMessage, setFeedbackMessage] = useState('')
+  // 게임 시작
+  const startGame = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      gameStarted: true,
+      gameCompleted: false,
+      currentRound: 1,
+      reactionTimes: [],
+      startTime: Date.now()
+    }))
+    startRound()
+  }, [])
 
-  const startGame = async () => {
-    try {
-      // 백엔드에 훈련 세션 시작
-      const sessionResponse = await trainingAPI.startSession({
-        training_type: 'basic',
-        module: 'reaction_speed',
-        difficulty: 'beginner'
-      })
-
-      setGameState(prev => ({
-        ...prev,
-        gameStarted: true,
-        sessionId: sessionResponse.session_id.toString(),
-        startTime: Date.now(),
-        currentRound: 1,
-        reactionTimes: [],
-        gameCompleted: false
-      }))
-      setShowInstructions(false)
-
-      // 첫 번째 라운드 시작
-      startRound()
-
-      toast.success('반응 속도 훈련이 시작되었습니다!')
-    } catch (error) {
-      console.error('Failed to start training session:', error)
-      toast.error('훈련 세션 시작에 실패했습니다. 다시 시도해주세요.')
+  // 라운드 시작
+  const startRound = useCallback(() => {
+    if (gameState.currentRound > gameState.totalRounds) {
+      completeGame()
+      return
     }
-  }
 
-  const startRound = () => {
-    // 2-5초 랜덤 대기 후 쥐 등장
-    const waitTime = 2000 + Math.random() * 3000 // 2-5초
-    
+    setGameState(prev => ({
+      ...prev,
+      showMouse: false,
+      waitingForClick: false
+    }))
+
+    // 1-3초 후 마우스 표시
+    const delay = Math.random() * 2000 + 1000
     setTimeout(() => {
       setGameState(prev => ({
         ...prev,
@@ -84,332 +67,214 @@ export default function ReactionSpeedPage() {
         mouseAppearTime: Date.now(),
         waitingForClick: true
       }))
-    }, waitTime)
-  }
+    }, delay)
+  }, [gameState.currentRound, gameState.totalRounds])
 
-  const handleMouseClick = () => {
+  // 마우스 클릭 처리
+  const handleMouseClick = useCallback(() => {
     if (!gameState.waitingForClick || !gameState.mouseAppearTime) return
 
     const reactionTime = Date.now() - gameState.mouseAppearTime
-    const newReactionTimes = [...gameState.reactionTimes, reactionTime]
-
+    
     setGameState(prev => ({
       ...prev,
-      reactionTimes: newReactionTimes,
+      reactionTimes: [...prev.reactionTimes, reactionTime],
       showMouse: false,
       waitingForClick: false,
-      mouseAppearTime: null
+      currentRound: prev.currentRound + 1
     }))
 
-    setFeedbackMessage(`반응 시간: ${reactionTime}ms`)
-    setShowFeedback(true)
-
+    // 다음 라운드로
     setTimeout(() => {
-      setShowFeedback(false)
-      
-      if (gameState.currentRound < gameState.totalRounds) {
-        // 다음 라운드
-        setGameState(prev => ({
-          ...prev,
-          currentRound: prev.currentRound + 1
-        }))
-        setTimeout(() => startRound(), 1000)
-      } else {
-        // 게임 완료
-        const averageTime = newReactionTimes.reduce((sum, time) => sum + time, 0) / newReactionTimes.length
-        setGameState(prev => ({
-          ...prev,
-          gameCompleted: true,
-          averageReactionTime: Math.round(averageTime)
-        }))
-        saveGameResults(Math.round(averageTime))
-      }
-    }, 1500)
-  }
+      startRound()
+    }, 1000)
+  }, [gameState.waitingForClick, gameState.mouseAppearTime, startRound])
 
-  const saveGameResults = async (averageTime: number) => {
-    if (!gameState.sessionId) return
+  // 게임 완료
+  const completeGame = useCallback(() => {
+    const average = gameState.reactionTimes.reduce((sum, time) => sum + time, 0) / gameState.reactionTimes.length
+    
+    setGameState(prev => ({
+      ...prev,
+      gameCompleted: true,
+      gameStarted: false,
+      averageReactionTime: Math.round(average)
+    }))
 
+    // 게임 결과를 로컬 스토리지에 저장
     try {
-      const timeSpent = gameState.startTime ? Date.now() - gameState.startTime : 0
-
-      await trainingAPI.completeSession(gameState.sessionId, {
-        score: Math.max(0, 1000 - averageTime), // 빠를수록 높은 점수
-        accuracy: Math.round((1000 - averageTime) / 10), // 반응 속도 기반 정확도
-        time_spent: Math.round(timeSpent / 1000) // 초 단위로 변환
+      const gameHistory = JSON.parse(localStorage.getItem('gameHistory') || '[]')
+      gameHistory.push({
+        game: 'reaction-speed',
+        timestamp: new Date().toISOString(),
+        averageReactionTime: Math.round(average),
+        reactionTimes: gameState.reactionTimes,
+        rounds: gameState.totalRounds
       })
-
-      toast.success('훈련 결과가 저장되었습니다!')
+      localStorage.setItem('gameHistory', JSON.stringify(gameHistory.slice(-50)))
     } catch (error) {
-      console.error('Failed to save game results:', error)
-      toast.error('결과 저장에 실패했습니다.')
+      console.log('게임 결과 저장 실패:', error)
     }
-  }
+  }, [gameState.reactionTimes, gameState.totalRounds])
 
-  const resetGame = () => {
-    setGameState({
+  // 게임 재시작
+  const restartGame = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
       currentRound: 1,
-      totalRounds: 5,
       reactionTimes: [],
       gameStarted: false,
       gameCompleted: false,
-      sessionId: null,
-      startTime: null,
       showMouse: false,
-      mouseAppearTime: null,
-      waitingForClick: false,
-      averageReactionTime: 0
-    })
-    setShowInstructions(true)
-    setShowFeedback(false)
-  }
+      waitingForClick: false
+    }))
+  }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-mint-50 to-lavender-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
       {/* 헤더 */}
-      <header className="bg-white shadow-lg border-b-4 border-mint-200">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Link href="/basic-training" className="text-mint-500 hover:text-mint-600">
-                <ArrowLeft className="w-6 h-6" />
-              </Link>
-              <div>
-                <h1 className="text-xl font-bold text-mint-600">반응 속도 훈련</h1>
-                <p className="text-sm text-gray-600">기초 시지각 훈련</p>
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link 
+            href="/basic-training"
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>뒤로가기</span>
+          </Link>
+          
+          <div className="flex items-center space-x-4">
+            <div className="text-sm text-gray-600">
+              라운드: {gameState.currentRound} / {gameState.totalRounds}
+            </div>
+            {gameState.reactionTimes.length > 0 && (
+              <div className="text-sm text-gray-600">
+                평균 반응시간: {Math.round(gameState.reactionTimes.reduce((sum, time) => sum + time, 0) / gameState.reactionTimes.length)}ms
               </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={resetGame}
-                className="btn-secondary text-sm"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                다시 시작
-              </button>
-            </div>
+            )}
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        {/* 게임 상태 표시 */}
-        {gameState.gameStarted && !gameState.gameCompleted && (
+      {/* 메인 콘텐츠 */}
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">반응 속도 훈련</h1>
+          <p className="text-lg text-gray-600">마우스가 나타나면 빠르게 클릭하세요!</p>
+        </div>
+
+        {!gameState.gameStarted && !gameState.gameCompleted && (
           <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
           >
-            <div className="card text-center">
-              <div className="text-2xl font-bold text-mint-600">{gameState.currentRound}</div>
-              <div className="text-sm text-gray-600">라운드</div>
-            </div>
-            <div className="card text-center">
-              <div className="text-2xl font-bold text-success-600">{gameState.totalRounds}</div>
-              <div className="text-sm text-gray-600">총 라운드</div>
-            </div>
-            <div className="card text-center">
-              <div className="text-2xl font-bold text-warning-600">{gameState.reactionTimes.length}</div>
-              <div className="text-sm text-gray-600">완료</div>
-            </div>
-            <div className="card text-center">
-              <div className="text-2xl font-bold text-secondary-600">
-                {gameState.reactionTimes.length > 0 
-                  ? Math.round(gameState.reactionTimes.reduce((sum, time) => sum + time, 0) / gameState.reactionTimes.length)
-                  : 0}ms
+            <div className="bg-white rounded-2xl p-8 shadow-lg max-w-md mx-auto">
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-teal-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <span className="text-white text-3xl">⚡</span>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">게임 설명</h2>
+                <p className="text-gray-600">
+                  화면에 마우스가 나타나면 빠르게 클릭하세요!<br/>
+                  반응 속도를 측정하여 집중력을 향상시킵니다.
+                </p>
               </div>
-              <div className="text-sm text-gray-600">평균 반응시간</div>
+              <button
+                onClick={startGame}
+                className="px-8 py-4 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-xl font-semibold text-lg hover:from-green-600 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+              >
+                게임 시작하기
+              </button>
             </div>
           </motion.div>
         )}
 
-        {/* 게임 완료 화면 */}
+        {gameState.gameStarted && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <div className="bg-white rounded-2xl p-8 shadow-lg max-w-md mx-auto">
+              <div className="mb-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">준비하세요!</h3>
+                <div className="w-32 h-32 mx-auto bg-gray-100 rounded-2xl flex items-center justify-center">
+                  <AnimatePresence>
+                    {gameState.showMouse && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0 }}
+                        className="w-16 h-16 bg-green-500 rounded-full cursor-pointer hover:bg-green-600 transition-colors"
+                        onClick={handleMouseClick}
+                      />
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {!gameState.showMouse && (
+                <div className="text-gray-600">
+                  마우스가 나타날 때까지 기다리세요...
+                </div>
+              )}
+
+              {gameState.showMouse && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-green-600 font-semibold text-lg"
+                >
+                  클릭하세요! 🖱️
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+        )}
+
         {gameState.gameCompleted && (
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="text-center mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
           >
-            <div className="card max-w-md mx-auto">
-              <div className="text-6xl mb-4">🐭</div>
-              <h2 className="text-3xl font-bold text-mint-600 mb-4">훈련 완료!</h2>
-              <div className="space-y-2 mb-6">
-                <p className="text-lg">평균 반응 시간: <span className="font-bold text-mint-600">{gameState.averageReactionTime}ms</span></p>
-                <p className="text-lg">총 라운드: <span className="font-bold text-success-600">{gameState.totalRounds}</span></p>
-                <p className="text-lg">완료한 라운드: <span className="font-bold text-secondary-600">{gameState.reactionTimes.length}</span></p>
+            <div className="bg-white rounded-2xl p-8 shadow-lg max-w-md mx-auto">
+              <div className="mb-6">
+                <div className="text-6xl mb-4">🎉</div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">게임 완료!</h2>
+                <div className="space-y-2 text-lg">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">평균 반응시간:</span>
+                    <span className="font-bold text-green-600">{gameState.averageReactionTime}ms</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">최고 기록:</span>
+                    <span className="font-bold text-blue-600">{Math.min(...gameState.reactionTimes)}ms</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">총 라운드:</span>
+                    <span className="font-bold text-purple-600">{gameState.totalRounds}라운드</span>
+                  </div>
+                </div>
               </div>
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6">
-                <p className="text-green-700 text-sm">
-                  ✅ 훈련 결과가 저장되었습니다!
-                </p>
-              </div>
+              
               <div className="flex space-x-4">
                 <button
-                  onClick={resetGame}
-                  className="btn-primary flex-1"
+                  onClick={restartGame}
+                  className="flex-1 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center justify-center space-x-2"
                 >
-                  다시 하기
+                  <RotateCcw className="w-4 h-4" />
+                  <span>다시하기</span>
                 </button>
-                <Link href="/dashboard" className="btn-secondary flex-1">
-                  내 대시보드
-                </Link>
-                <Link href="/basic-training" className="btn-secondary flex-1">
-                  다른 훈련
+                <Link
+                  href="/basic-training"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-lg hover:from-green-600 hover:to-teal-700 transition-all duration-300 text-center"
+                >
+                  다른 게임
                 </Link>
               </div>
             </div>
-          </motion.div>
-        )}
-
-        {/* 게임 화면 */}
-        {gameState.gameStarted && !gameState.gameCompleted && (
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="text-center"
-          >
-            {/* 게임 영역 */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 border-4 border-mint-200 relative overflow-hidden">
-              <h4 className="text-lg font-semibold text-gray-700 mb-6">
-                {gameState.waitingForClick ? '쥐가 나타나면 빠르게 클릭하세요!' : '쥐가 나타날 때까지 기다리세요...'}
-              </h4>
-              <div className="relative w-full h-[600px] bg-gray-50 rounded-lg border-2 border-gray-300 flex items-center justify-center">
-                {gameState.showMouse ? (
-                  <motion.button
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={handleMouseClick}
-                    className="text-8xl cursor-pointer"
-                  >
-                    🐭
-                  </motion.button>
-                ) : (
-                  <div className="text-6xl text-gray-400">
-                    ⏳
-                  </div>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* 피드백 */}
-        <AnimatePresence>
-          {showFeedback && (
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              className="fixed inset-0 flex items-center justify-center z-50"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl p-8 text-center border-4 border-mint-200">
-                <div className="text-4xl mb-4">🎉</div>
-                <p className="text-xl font-semibold text-gray-800">
-                  {feedbackMessage}
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* 시작 화면 */}
-        {!gameState.gameStarted && (
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="text-center"
-          >
-            {!user ? (
-              <div className="max-w-md mx-auto">
-                <div className="card mb-8">
-                  <div className="text-6xl mb-6">🔐</div>
-                  <h2 className="text-3xl font-bold text-mint-600 mb-6">
-                    로그인이 필요합니다
-                  </h2>
-                  <p className="text-lg text-gray-700 mb-6">
-                    훈련 결과를 저장하고 진행률을 추적하려면 로그인해주세요.
-                  </p>
-                  <div className="flex space-x-4">
-                    <Link href="/" className="btn-primary flex-1">
-                      로그인하기
-                    </Link>
-                    <Link href="/basic-training" className="btn-secondary flex-1">
-                      뒤로 가기
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ) : showInstructions ? (
-              <div className="max-w-2xl mx-auto">
-                <div className="card mb-8">
-                  <div className="text-6xl mb-6">🐭</div>
-                  <h2 className="text-3xl font-bold text-mint-600 mb-6">
-                    반응 속도 훈련
-                  </h2>
-                  <div className="text-left space-y-4 text-lg text-gray-700">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-mint-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                        <span className="text-mint-600 font-bold text-sm">1</span>
-                      </div>
-                      <p>화면에 쥐가 나타날 때까지 기다리세요</p>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-mint-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                        <span className="text-mint-600 font-bold text-sm">2</span>
-                      </div>
-                      <p>쥐가 나타나면 <span className="text-red-600 font-bold">빠르게 클릭</span>하세요</p>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-mint-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                        <span className="text-mint-600 font-bold text-sm">3</span>
-                      </div>
-                      <p>총 5번 반복하여 평균 반응 속도를 측정합니다</p>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-mint-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                        <span className="text-mint-600 font-bold text-sm">4</span>
-                      </div>
-                      <p>빠를수록 높은 점수를 획득합니다!</p>
-                    </div>
-                  </div>
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-                    <p className="text-blue-700 text-sm">
-                      💾 훈련 결과는 자동으로 저장됩니다!
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex space-x-4 justify-center">
-                  <button
-                    onClick={startGame}
-                    className="game-button"
-                  >
-                    🐭 게임 시작
-                  </button>
-                  <Link href="/basic-training" className="btn-secondary">
-                    뒤로 가기
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center">
-                <div className="text-6xl mb-6">🐭</div>
-                <h2 className="text-3xl font-bold text-mint-600 mb-6">
-                  준비되셨나요?
-                </h2>
-                <p className="text-xl text-gray-700 mb-8">
-                  반응 속도 훈련을 통해 빠른 반응 능력을 향상시켜보세요!
-                </p>
-                <button
-                  onClick={startGame}
-                  className="game-button"
-                >
-                  시작하기
-                </button>
-              </div>
-            )}
           </motion.div>
         )}
       </main>

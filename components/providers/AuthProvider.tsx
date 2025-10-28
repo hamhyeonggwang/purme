@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { authAPI, TokenManager } from '@/lib/api'
+import { authAPI } from '@/lib/api'
 
 interface User {
   id: number
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 초기 로드 시 토큰 확인
   useEffect(() => {
-    const token = TokenManager.getToken()
+    const token = localStorage.getItem('accessToken')
     if (token) {
       // 간단한 사용자 정보 설정 (실제로는 토큰에서 파싱)
       setUser({
