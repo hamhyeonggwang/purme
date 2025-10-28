@@ -212,7 +212,7 @@ export default function ColorMatchingGame() {
           >
             {/* 현재 색깔 표시 */}
             <div className="mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">이 색깔을 찾아주세요!</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">아래 색깔을 찾아주세요!</h3>
               <div 
                 className="w-32 h-32 mx-auto rounded-2xl shadow-lg border-4 border-white"
                 style={{ backgroundColor: gameState.currentColor }}
@@ -220,24 +220,26 @@ export default function ColorMatchingGame() {
             </div>
 
             {/* 색깔 옵션들 */}
-            <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-8">
-              {gameState.colorOptions.map((color, index) => (
-                <motion.button
-                  key={index}
-                  onClick={() => selectColor(color)}
-                  disabled={gameState.showFeedback}
-                  className={`w-20 h-20 rounded-xl shadow-lg border-4 transition-all duration-200 ${
-                    gameState.selectedColor === color
-                      ? gameState.isCorrect
-                        ? 'border-green-500 scale-110'
-                        : 'border-red-500 scale-110'
-                      : 'border-white hover:scale-105'
-                  }`}
-                  style={{ backgroundColor: color }}
-                  whileHover={{ scale: gameState.showFeedback ? 1 : 1.05 }}
-                  whileTap={{ scale: gameState.showFeedback ? 1 : 0.95 }}
-                />
-              ))}
+            <div className="flex justify-center">
+              <div className="grid grid-cols-2 gap-4 max-w-md">
+                {gameState.colorOptions.map((color, index) => (
+                  <motion.button
+                    key={index}
+                    onClick={() => selectColor(color)}
+                    disabled={gameState.showFeedback}
+                    className={`w-20 h-20 rounded-xl shadow-lg border-4 transition-all duration-200 ${
+                      gameState.selectedColor === color
+                        ? gameState.isCorrect
+                          ? 'border-green-500 scale-110'
+                          : 'border-red-500 scale-110'
+                        : 'border-white hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    whileHover={{ scale: gameState.showFeedback ? 1 : 1.05 }}
+                    whileTap={{ scale: gameState.showFeedback ? 1 : 0.95 }}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* 피드백 */}

@@ -40,10 +40,10 @@ export default function HomePage() {
                 <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                   <div className="py-2">
                     <Link href="/basic-training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-mint-50 hover:text-mint-600 transition-colors">
-                      기초훈련
+                      시지각 훈련
                     </Link>
                     <Link href="/training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-lavender-50 hover:text-lavender-600 transition-colors">
-                      인지훈련
+                      인지 학습 훈련
                     </Link>
                     <Link href="/kiosk-training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
                       키오스크훈련
@@ -121,7 +121,7 @@ export default function HomePage() {
                     시작하기
                   </Link>
                   <Link href="/training" className="border-2 border-mint-500 text-mint-600 hover:bg-mint-500 hover:text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors text-center">
-                    데모 보기
+                    평가하기
                   </Link>
                 </div>
               </div>

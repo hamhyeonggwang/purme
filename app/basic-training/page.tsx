@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-export default function BasicTrainingPage() {
+export default function VisualPerceptionTrainingPage() {
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const [selectedDifficulty, setSelectedDifficulty] = useState('전체')
 
@@ -164,7 +164,7 @@ export default function BasicTrainingPage() {
               />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Link IT</h1>
-                <p className="text-xs text-gray-500">기초 훈련</p>
+                <p className="text-xs text-gray-500">시지각 훈련</p>
               </div>
             </div>
 
@@ -210,7 +210,7 @@ export default function BasicTrainingPage() {
         <div className="max-w-7xl mx-auto">
           {/* 페이지 헤더 */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-black text-gray-900 mb-4">기초 훈련</h1>
+            <h1 className="text-4xl font-black text-gray-900 mb-4">시지각 훈련</h1>
           </div>
 
           {/* 필터 섹션 */}
@@ -337,7 +337,7 @@ export default function BasicTrainingPage() {
                 </p>
               </div>
               <div>
-                <h4 className="font-bold mb-4">기초 훈련</h4>
+                <h4 className="font-bold mb-4">시지각 훈련</h4>
                 <ul className="space-y-2 text-sm text-gray-400">
                   <li>시각적 차별화</li>
                   <li>시각적 주의</li>

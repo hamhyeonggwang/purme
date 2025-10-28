@@ -308,7 +308,7 @@ const categories = [
 
 const difficulties = ['전체', '초급', '중급', '고급']
 
-export default function TrainingPage() {
+export default function CognitiveLearningTrainingPage() {
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const [selectedDifficulty, setSelectedDifficulty] = useState('전체')
   const [searchTerm, setSearchTerm] = useState('')
@@ -366,7 +366,7 @@ export default function TrainingPage() {
               />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Link IT</h1>
-                <p className="text-xs text-gray-500">인지훈련 게임</p>
+                <p className="text-xs text-gray-500">인지 학습 훈련</p>
               </div>
             </div>
 
@@ -385,10 +385,10 @@ export default function TrainingPage() {
                 <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                   <div className="py-2">
                     <Link href="/basic-training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-mint-50 hover:text-mint-600 transition-colors">
-                      기초훈련
+                      시지각 훈련
                     </Link>
                     <Link href="/training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-lavender-50 hover:text-lavender-600 transition-colors">
-                      인지훈련
+                      인지 학습 훈련
                     </Link>
                     <Link href="/kiosk-training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
                       키오스크훈련
