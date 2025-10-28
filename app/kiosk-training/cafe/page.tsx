@@ -1,621 +1,830 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowLeft, ShoppingCart, CreditCard, Download } from 'lucide-react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { ArrowLeft, ShoppingCart, HelpCircle, RotateCcw } from 'lucide-react'
-import { useSessionStore } from '../../../store/session'
-import { getScenario } from '../../../lib/scenarios'
-import { Button, Stepper, Modal, Keypad, Toast } from '../../../components/ui'
-import { paymentManager } from '../../../lib/payments'
 
-interface MenuItem {
+interface CafeMenu {
   id: string
   name: string
   price: number
   img: string
-  tags: string[]
-  allergens: string[]
+  tags?: ('hot' | 'ice' | 'signature' | 'decaf')[]
+  options: {
+    size: ('S' | 'M' | 'L')[]
+    temperature: ('HOT' | 'ICE')[]
+    addOns?: { id: string; label: string; price: number }[]
+    sweetness?: (0 | 25 | 50 | 75 | 100)[]
+  }
+  allergens?: ('milk' | 'nuts' | 'soy')[]
 }
 
 interface CartItem {
   menuId: string
-  name: string
   qty: number
-  size: string
-  temperature: string
-  addOns: string[]
-  sweetness: number
+  selected: { 
+    size: 'S' | 'M' | 'L'
+    temperature: 'HOT' | 'ICE'
+    addOns: string[]
+    sweetness: number
+  }
   unitPrice: number
   subTotal: number
 }
 
+interface CafeState {
+  currentStep: 'menu' | 'options' | 'cart' | 'name' | 'payment' | 'receipt'
+  selectedMenu: CafeMenu | null
+  cart: CartItem[]
+  pickupName: string
+  paymentMethod: 'card' | 'qr' | 'cash' | null
+  isPaymentProcessing: boolean
+  gameCompleted: boolean
+}
+
 export default function CafeKiosk() {
-  const {
-    currentSession,
-    startSession,
-    updateSession,
-    nextStep,
-    previousStep,
-    logAction,
-    logError,
-    useAssist,
-    isEasyMode
-  } = useSessionStore()
+  const [gameState, setGameState] = useState<CafeState>({
+    currentStep: 'menu',
+    selectedMenu: null,
+    cart: [],
+    pickupName: '',
+    paymentMethod: null,
+    isPaymentProcessing: false,
+    gameCompleted: false
+  })
 
-  const [currentStep, setCurrentStep] = useState('menu')
-  const [cart, setCart] = useState<CartItem[]>([])
-  const [selectedMenu, setSelectedMenu] = useState<MenuItem | null>(null)
-  const [pickupName, setPickupName] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState<string | null>(null)
-  const [showPaymentModal, setShowPaymentModal] = useState(false)
-  const [showToast, setShowToast] = useState(false)
-  const [toastMessage, setToastMessage] = useState('')
-  const [showHelp, setShowHelp] = useState(false)
+  const [showInstructions, setShowInstructions] = useState(true)
+  const [showFeedback, setShowFeedback] = useState(false)
+  const [feedbackMessage, setFeedbackMessage] = useState('')
 
-  const scenario = getScenario('cafe')
-  if (!scenario) return null
-
-  const steps = scenario.steps
-  const menus = scenario.datasets.menus as MenuItem[]
-  const options = scenario.datasets.options
-
-  useEffect(() => {
-    if (!currentSession) {
-      startSession('cafe')
+  // 카페 메뉴 데이터
+  const cafeMenus: CafeMenu[] = [
+    {
+      id: 'americano',
+      name: '아메리카노',
+      price: 4500,
+      img: '☕',
+      tags: ['hot', 'ice'],
+      options: {
+        size: ['S', 'M', 'L'],
+        temperature: ['HOT', 'ICE'],
+        addOns: [
+          { id: 'shot', label: '샷 추가', price: 500 },
+          { id: 'syrup', label: '시럽 추가', price: 300 }
+        ],
+        sweetness: [0, 25, 50, 75, 100]
+      }
+    },
+    {
+      id: 'latte',
+      name: '카페라떼',
+      price: 5000,
+      img: '🥛',
+      tags: ['hot', 'ice'],
+      options: {
+        size: ['S', 'M', 'L'],
+        temperature: ['HOT', 'ICE'],
+        addOns: [
+          { id: 'shot', label: '샷 추가', price: 500 },
+          { id: 'syrup', label: '시럽 추가', price: 300 }
+        ],
+        sweetness: [0, 25, 50, 75, 100]
+      },
+      allergens: ['milk']
+    },
+    {
+      id: 'cappuccino',
+      name: '카푸치노',
+      price: 5000,
+      img: '☕',
+      tags: ['hot'],
+      options: {
+        size: ['S', 'M', 'L'],
+        temperature: ['HOT'],
+        addOns: [
+          { id: 'shot', label: '샷 추가', price: 500 }
+        ],
+        sweetness: [0, 25, 50, 75, 100]
+      },
+      allergens: ['milk']
+    },
+    {
+      id: 'mocha',
+      name: '카페모카',
+      price: 5500,
+      img: '🍫',
+      tags: ['hot', 'ice'],
+      options: {
+        size: ['S', 'M', 'L'],
+        temperature: ['HOT', 'ICE'],
+        addOns: [
+          { id: 'shot', label: '샷 추가', price: 500 },
+          { id: 'whipped', label: '휘핑크림', price: 500 }
+        ],
+        sweetness: [0, 25, 50, 75, 100]
+      },
+      allergens: ['milk']
+    },
+    {
+      id: 'frappuccino',
+      name: '프라푸치노',
+      price: 6000,
+      img: '🧊',
+      tags: ['ice', 'signature'],
+      options: {
+        size: ['S', 'M', 'L'],
+        temperature: ['ICE'],
+        addOns: [
+          { id: 'shot', label: '샷 추가', price: 500 },
+          { id: 'whipped', label: '휘핑크림', price: 500 }
+        ],
+        sweetness: [0, 25, 50, 75, 100]
+      },
+      allergens: ['milk']
+    },
+    {
+      id: 'tea',
+      name: '차',
+      price: 4000,
+      img: '🍵',
+      tags: ['hot', 'ice'],
+      options: {
+        size: ['S', 'M', 'L'],
+        temperature: ['HOT', 'ICE'],
+        sweetness: [0, 25, 50, 75, 100]
+      }
     }
-  }, [currentSession, startSession])
+  ]
 
-  const handleMenuSelect = (menu: MenuItem) => {
-    setSelectedMenu(menu)
-    setCurrentStep('options')
-    logAction('menu_select', { menuId: menu.id })
+  const [selectedOptions, setSelectedOptions] = useState({
+    size: 'M' as 'S' | 'M' | 'L',
+    temperature: 'HOT' as 'HOT' | 'ICE',
+    addOns: [] as string[],
+    sweetness: 50
+  })
+
+  // 메뉴 선택
+  const selectMenu = (menu: CafeMenu) => {
+    setGameState(prev => ({
+      ...prev,
+      selectedMenu: menu,
+      currentStep: 'options'
+    }))
+    setSelectedOptions({
+      size: 'M',
+      temperature: 'HOT',
+      addOns: [],
+      sweetness: 50
+    })
   }
 
-  const handleAddToCart = (menu: MenuItem, selectedOptions: any) => {
+  // 옵션 선택
+  const selectOption = (type: string, value: any) => {
+    setSelectedOptions(prev => ({
+      ...prev,
+      [type]: value
+    }))
+  }
+
+  // 장바구니에 추가
+  const addToCart = () => {
+    if (!gameState.selectedMenu) return
+
+    const addOnPrice = gameState.selectedMenu.options.addOns?.reduce((total, addOn) => {
+      return total + (selectedOptions.addOns.includes(addOn.id) ? addOn.price : 0)
+    }, 0) || 0
+
+    const sizeMultiplier = selectedOptions.size === 'S' ? 0.8 : selectedOptions.size === 'L' ? 1.2 : 1
+    const unitPrice = Math.round((gameState.selectedMenu.price + addOnPrice) * sizeMultiplier)
+
     const cartItem: CartItem = {
-      menuId: menu.id,
-      name: menu.name,
+      menuId: gameState.selectedMenu.id,
       qty: 1,
-      size: selectedOptions.size || 'M',
-      temperature: selectedOptions.temperature || 'ICE',
-      addOns: selectedOptions.addOns || [],
-      sweetness: selectedOptions.sweetness || 50,
-      unitPrice: menu.price,
-      subTotal: menu.price
+      selected: selectedOptions,
+      unitPrice,
+      subTotal: unitPrice
     }
 
-    setCart([...cart, cartItem])
-    setCurrentStep('cart')
-    setSelectedMenu(null)
-    logAction('add_to_cart', { menuId: menu.id, options: selectedOptions })
+    setGameState(prev => ({
+      ...prev,
+      cart: [...prev.cart, cartItem],
+      currentStep: 'cart'
+    }))
+
+    showFeedbackMessage('장바구니에 추가되었습니다! 🛒')
   }
 
-  const handleQuantityChange = (index: number, newQty: number) => {
+  // 수량 변경
+  const updateQuantity = (index: number, newQty: number) => {
     if (newQty <= 0) {
-      const newCart = cart.filter((_, i) => i !== index)
-      setCart(newCart)
+      setGameState(prev => ({
+        ...prev,
+        cart: prev.cart.filter((_, i) => i !== index)
+      }))
     } else {
-      const newCart = [...cart]
-      newCart[index].qty = newQty
-      newCart[index].subTotal = newCart[index].unitPrice * newQty
-      setCart(newCart)
-    }
-    logAction('quantity_change', { index, newQty })
-  }
-
-  const handlePayment = async (method: string) => {
-    setPaymentMethod(method)
-    setShowPaymentModal(true)
-    
-    const totalAmount = cart.reduce((sum, item) => sum + item.subTotal, 0)
-    
-    try {
-      let result
-      if (method === 'card') {
-        result = await paymentManager.processCardPayment(totalAmount, {
-          cardNumber: '1234-5678-9012-3456',
-          expiryDate: '12/25',
-          cvv: '123',
-          pin: '1234'
-        })
-      } else if (method === 'qr') {
-        result = await paymentManager.processQRPayment(totalAmount)
-      } else if (method === 'cash') {
-        result = await paymentManager.processCashPayment(totalAmount, totalAmount + 1000)
-      }
-
-      if (result?.success) {
-        setCurrentStep('receipt')
-        setShowPaymentModal(false)
-        logAction('payment_success', { method, amount: totalAmount })
-        updateSession({ paymentResult: result })
-      } else {
-        setToastMessage(result?.error || '결제에 실패했습니다')
-        setShowToast(true)
-        logError('payment_failed', result?.error || 'Unknown error')
-      }
-    } catch (error) {
-      setToastMessage('결제 중 오류가 발생했습니다')
-      setShowToast(true)
-      logError('payment_error', error instanceof Error ? error.message : 'Unknown error')
+      setGameState(prev => ({
+        ...prev,
+        cart: prev.cart.map((item, i) => 
+          i === index 
+            ? { ...item, qty: newQty, subTotal: item.unitPrice * newQty }
+            : item
+        )
+      }))
     }
   }
 
-  const handleHelp = () => {
-    setShowHelp(true)
-    useAssist()
+  // 픽업 이름 입력
+  const setPickupName = (name: string) => {
+    setGameState(prev => ({
+      ...prev,
+      pickupName: name,
+      currentStep: 'payment'
+    }))
   }
 
+  // 결제 처리
+  const processPayment = async (method: 'card' | 'qr' | 'cash') => {
+    setGameState(prev => ({
+      ...prev,
+      paymentMethod: method,
+      isPaymentProcessing: true
+    }))
+
+    // 결제 시뮬레이션
+    await new Promise(resolve => setTimeout(resolve, 2000))
+
+    setGameState(prev => ({
+      ...prev,
+      isPaymentProcessing: false,
+      currentStep: 'receipt'
+    }))
+  }
+
+  // 피드백 표시
+  const showFeedbackMessage = (message: string) => {
+    setFeedbackMessage(message)
+    setShowFeedback(true)
+    setTimeout(() => setShowFeedback(false), 2000)
+  }
+
+  // 총 금액 계산
   const getTotalAmount = () => {
-    return cart.reduce((sum, item) => sum + item.subTotal, 0)
+    return gameState.cart.reduce((total, item) => total + item.subTotal, 0)
   }
 
-  const renderMenuStep = () => (
-    <div className="space-y-6">
-      <h2 className={`text-center font-bold ${isEasyMode ? 'text-3xl' : 'text-2xl'} text-gray-900`}>
-        메뉴를 선택하세요
-      </h2>
-      
-      <div className="grid grid-cols-2 gap-4">
-        {menus.map((menu) => (
-          <motion.button
-            key={menu.id}
-            onClick={() => handleMenuSelect(menu)}
-            className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-shadow text-left"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <div className="aspect-square bg-gray-200 rounded-lg mb-3 flex items-center justify-center">
-              <span className="text-4xl">☕</span>
-            </div>
-            <h3 className={`font-bold ${isEasyMode ? 'text-xl' : 'text-lg'} text-gray-900`}>
-              {menu.name}
-            </h3>
-            <p className={`${isEasyMode ? 'text-lg' : 'text-base'} text-blue-600 font-semibold`}>
-              {menu.price.toLocaleString()}원
-            </p>
-            {menu.allergens.length > 0 && (
-              <p className="text-sm text-red-600">
-                알레르기: {menu.allergens.join(', ')}
-              </p>
-            )}
-          </motion.button>
-        ))}
-      </div>
-    </div>
-  )
+  // 게임 완료
+  const completeGame = () => {
+    setGameState(prev => ({
+      ...prev,
+      gameCompleted: true
+    }))
 
-  const renderOptionsStep = () => (
-    <div className="space-y-6">
-      <h2 className={`text-center font-bold ${isEasyMode ? 'text-3xl' : 'text-2xl'} text-gray-900`}>
-        옵션을 선택하세요
-      </h2>
-      
-      {selectedMenu && (
-        <div className="bg-white rounded-xl p-6 shadow-lg">
-          <h3 className={`font-bold ${isEasyMode ? 'text-2xl' : 'text-xl'} text-gray-900 mb-4`}>
-            {selectedMenu.name}
-          </h3>
-          
-          <div className="space-y-4">
-            <div>
-              <label className={`block font-semibold ${isEasyMode ? 'text-xl' : 'text-lg'} text-gray-700 mb-2`}>
-                사이즈
-              </label>
-              <div className="flex space-x-2">
-                {options.size.map((size) => (
-                  <Button
-                    key={size}
-                    variant="secondary"
-                    size={isEasyMode ? 'md' : 'sm'}
-                    className="flex-1"
-                  >
-                    {size}
-                  </Button>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <label className={`block font-semibold ${isEasyMode ? 'text-xl' : 'text-lg'} text-gray-700 mb-2`}>
-                온도
-              </label>
-              <div className="flex space-x-2">
-                {options.temperature.map((temp) => (
-                  <Button
-                    key={temp}
-                    variant="secondary"
-                    size={isEasyMode ? 'md' : 'sm'}
-                    className="flex-1"
-                  >
-                    {temp}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-6 flex space-x-4">
-            <Button
-              onClick={() => setCurrentStep('menu')}
-              variant="secondary"
-              size={isEasyMode ? 'lg' : 'md'}
-              className="flex-1"
-            >
-              이전
-            </Button>
-            <Button
-              onClick={() => handleAddToCart(selectedMenu, {})}
-              size={isEasyMode ? 'lg' : 'md'}
-              className="flex-1"
-            >
-              장바구니에 담기
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-
-  const renderCartStep = () => (
-    <div className="space-y-6">
-      <h2 className={`text-center font-bold ${isEasyMode ? 'text-3xl' : 'text-2xl'} text-gray-900`}>
-        장바구니
-      </h2>
-      
-      <div className="space-y-4">
-        {cart.map((item, index) => (
-          <div key={index} className="bg-white rounded-xl p-4 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className={`font-bold ${isEasyMode ? 'text-xl' : 'text-lg'} text-gray-900`}>
-                  {item.name}
-                </h3>
-                <p className="text-gray-600">
-                  {item.size} / {item.temperature}
-                </p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <Button
-                    onClick={() => handleQuantityChange(index, item.qty - 1)}
-                    variant="secondary"
-                    size="sm"
-                  >
-                    -
-                  </Button>
-                  <span className={`font-bold ${isEasyMode ? 'text-xl' : 'text-lg'}`}>
-                    {item.qty}
-                  </span>
-                  <Button
-                    onClick={() => handleQuantityChange(index, item.qty + 1)}
-                    variant="secondary"
-                    size="sm"
-                  >
-                    +
-                  </Button>
-                </div>
-                <span className={`font-bold ${isEasyMode ? 'text-xl' : 'text-lg'} text-blue-600`}>
-                  {item.subTotal.toLocaleString()}원
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      <div className="bg-blue-50 rounded-xl p-4">
-        <div className="flex justify-between items-center">
-          <span className={`font-bold ${isEasyMode ? 'text-2xl' : 'text-xl'} text-gray-900`}>
-            총 금액
-          </span>
-          <span className={`font-bold ${isEasyMode ? 'text-2xl' : 'text-xl'} text-blue-600`}>
-            {getTotalAmount().toLocaleString()}원
-          </span>
-        </div>
-      </div>
-      
-      <div className="flex space-x-4">
-        <Button
-          onClick={() => setCurrentStep('menu')}
-          variant="secondary"
-          size={isEasyMode ? 'lg' : 'md'}
-          className="flex-1"
-        >
-          메뉴 추가
-        </Button>
-        <Button
-          onClick={() => setCurrentStep('name')}
-          size={isEasyMode ? 'lg' : 'md'}
-          className="flex-1"
-          disabled={cart.length === 0}
-        >
-          주문하기
-        </Button>
-      </div>
-    </div>
-  )
-
-  const renderNameStep = () => (
-    <div className="space-y-6">
-      <h2 className={`text-center font-bold ${isEasyMode ? 'text-3xl' : 'text-2xl'} text-gray-900`}>
-        픽업 이름을 입력하세요
-      </h2>
-      
-      <div className="bg-white rounded-xl p-6 shadow-lg">
-        <input
-          type="text"
-          value={pickupName}
-          onChange={(e) => setPickupName(e.target.value)}
-          placeholder="이름을 입력하세요"
-          className={`w-full p-4 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none ${
-            isEasyMode ? 'text-xl' : 'text-lg'
-          }`}
-          maxLength={10}
-        />
-      </div>
-      
-      <div className="flex space-x-4">
-        <Button
-          onClick={() => setCurrentStep('cart')}
-          variant="secondary"
-          size={isEasyMode ? 'lg' : 'md'}
-          className="flex-1"
-        >
-          이전
-        </Button>
-        <Button
-          onClick={() => setCurrentStep('payment')}
-          size={isEasyMode ? 'lg' : 'md'}
-          className="flex-1"
-          disabled={!pickupName.trim()}
-        >
-          다음
-        </Button>
-      </div>
-    </div>
-  )
-
-  const renderPaymentStep = () => (
-    <div className="space-y-6">
-      <h2 className={`text-center font-bold ${isEasyMode ? 'text-3xl' : 'text-2xl'} text-gray-900`}>
-        결제 방법을 선택하세요
-      </h2>
-      
-      <div className="grid grid-cols-1 gap-4">
-        <Button
-          onClick={() => handlePayment('card')}
-          size={isEasyMode ? 'lg' : 'md'}
-          className="h-20 flex items-center justify-center space-x-4"
-        >
-          <span className="text-3xl">💳</span>
-          <span>카드 결제</span>
-        </Button>
-        <Button
-          onClick={() => handlePayment('qr')}
-          size={isEasyMode ? 'lg' : 'md'}
-          className="h-20 flex items-center justify-center space-x-4"
-        >
-          <span className="text-3xl">📱</span>
-          <span>QR 결제</span>
-        </Button>
-        <Button
-          onClick={() => handlePayment('cash')}
-          size={isEasyMode ? 'lg' : 'md'}
-          className="h-20 flex items-center justify-center space-x-4"
-        >
-          <span className="text-3xl">💰</span>
-          <span>현금 결제</span>
-        </Button>
-      </div>
-      
-      <div className="bg-blue-50 rounded-xl p-4">
-        <div className="flex justify-between items-center">
-          <span className={`font-bold ${isEasyMode ? 'text-2xl' : 'text-xl'} text-gray-900`}>
-            결제 금액
-          </span>
-          <span className={`font-bold ${isEasyMode ? 'text-2xl' : 'text-xl'} text-blue-600`}>
-            {getTotalAmount().toLocaleString()}원
-          </span>
-        </div>
-      </div>
-      
-      <Button
-        onClick={() => setCurrentStep('name')}
-        variant="secondary"
-        size={isEasyMode ? 'lg' : 'md'}
-        className="w-full"
-      >
-        이전
-      </Button>
-    </div>
-  )
-
-  const renderReceiptStep = () => (
-    <div className="space-y-6">
-      <h2 className={`text-center font-bold ${isEasyMode ? 'text-3xl' : 'text-2xl'} text-gray-900`}>
-        주문 완료!
-      </h2>
-      
-      <div className="bg-white rounded-xl p-6 shadow-lg">
-        <div className="text-center mb-6">
-          <div className="text-6xl mb-4">🎉</div>
-          <h3 className={`font-bold ${isEasyMode ? 'text-2xl' : 'text-xl'} text-gray-900`}>
-            주문이 완료되었습니다
-          </h3>
-          <p className={`${isEasyMode ? 'text-lg' : 'text-base'} text-gray-600 mt-2`}>
-            픽업 이름: {pickupName}
-          </p>
-        </div>
-        
-        <div className="space-y-2">
-          {cart.map((item, index) => (
-            <div key={index} className="flex justify-between">
-              <span>{item.name} x{item.qty}</span>
-              <span>{item.subTotal.toLocaleString()}원</span>
-            </div>
-          ))}
-        </div>
-        
-        <div className="border-t pt-4 mt-4">
-          <div className="flex justify-between font-bold">
-            <span>총 금액</span>
-            <span>{getTotalAmount().toLocaleString()}원</span>
-          </div>
-        </div>
-      </div>
-      
-      <div className="flex space-x-4">
-        <Button
-          onClick={() => window.location.reload()}
-          variant="secondary"
-          size={isEasyMode ? 'lg' : 'md'}
-          className="flex-1"
-        >
-          새 주문
-        </Button>
-        <Link href="/kiosk-training" className="flex-1">
-          <Button
-            size={isEasyMode ? 'lg' : 'md'}
-            className="w-full"
-          >
-            홈으로
-          </Button>
-        </Link>
-      </div>
-    </div>
-  )
-
-  const renderCurrentStep = () => {
-    switch (currentStep) {
-      case 'menu':
-        return renderMenuStep()
-      case 'options':
-        return renderOptionsStep()
-      case 'cart':
-        return renderCartStep()
-      case 'name':
-        return renderNameStep()
-      case 'payment':
-        return renderPaymentStep()
-      case 'receipt':
-        return renderReceiptStep()
-      default:
-        return renderMenuStep()
+    // 게임 결과 저장
+    try {
+      const gameHistory = JSON.parse(localStorage.getItem('gameHistory') || '[]')
+      gameHistory.push({
+        game: 'cafe-kiosk',
+        timestamp: new Date().toISOString(),
+        totalAmount: getTotalAmount(),
+        itemsCount: gameState.cart.length,
+        paymentMethod: gameState.paymentMethod
+      })
+      localStorage.setItem('gameHistory', JSON.stringify(gameHistory.slice(-50)))
+    } catch (error) {
+      console.log('게임 결과 저장 실패:', error)
     }
+  }
+
+  // 게임 리셋
+  const resetGame = () => {
+    setGameState({
+      currentStep: 'menu',
+      selectedMenu: null,
+      cart: [],
+      pickupName: '',
+      paymentMethod: null,
+      isPaymentProcessing: false,
+      gameCompleted: false
+    })
+    setShowInstructions(true)
   }
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 ${
-      isEasyMode ? 'p-6' : 'p-4'
-    }`}>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       {/* 헤더 */}
-      <header className="bg-white/90 backdrop-blur-sm border-b border-blue-200 sticky top-0 z-40 mb-6">
+      <header className="bg-white/90 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/kiosk-training" className="text-gray-700 hover:text-blue-600 transition-colors">
-                <ArrowLeft className={isEasyMode ? 'w-8 h-8' : 'w-6 h-6'} />
+            <div className="flex items-center space-x-3">
+              <Link href="/kiosk-training" className="text-gray-700 hover:text-amber-600">
+                <ArrowLeft className="w-6 h-6" />
               </Link>
               <div>
-                <h1 className={`font-bold text-gray-900 ${isEasyMode ? 'text-3xl' : 'text-2xl'}`}>
-                  카페 주문
-                </h1>
-                <p className={`text-gray-600 ${isEasyMode ? 'text-lg' : 'text-sm'}`}>
-                  맛있는 음료를 주문해보세요
-                </p>
+                <h1 className="text-xl font-bold text-gray-900">카페 키오스크</h1>
+                <p className="text-sm text-gray-600">음료 주문부터 결제까지</p>
               </div>
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={handleHelp}
-                className={`bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
-                  isEasyMode ? 'text-lg' : 'text-base'
-                }`}
-              >
-                <HelpCircle className={isEasyMode ? 'w-6 h-6' : 'w-4 h-4'} />
-                <span>도움말</span>
-              </button>
-            </div>
+            <button
+              onClick={resetGame}
+              className="bg-amber-100 hover:bg-amber-200 text-gray-700 px-4 py-2 rounded-lg transition-colors"
+            >
+              다시 시작
+            </button>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto max-w-4xl">
-        {/* 진행 단계 */}
-        <div className="bg-white rounded-xl shadow-lg mb-6">
-          <Stepper
-            steps={steps}
-            currentStep={currentStep}
-            isEasyMode={isEasyMode}
-          />
-        </div>
-
-        {/* 메인 콘텐츠 */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          {renderCurrentStep()}
-        </div>
-      </div>
-
-      {/* 결제 모달 */}
-      <Modal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        title="결제 진행"
-        size="md"
-        isEasyMode={isEasyMode}
-      >
-        <div className="text-center">
-          <div className="text-4xl mb-4">💳</div>
-          <p className={`${isEasyMode ? 'text-xl' : 'text-lg'} text-gray-600 mb-6`}>
-            결제를 진행하고 있습니다...
-          </p>
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        </div>
-      </Modal>
-
-      {/* 도움말 모달 */}
-      <Modal
-        isOpen={showHelp}
-        onClose={() => setShowHelp(false)}
-        title="도움말"
-        size="lg"
-        isEasyMode={isEasyMode}
-      >
-        <div className="space-y-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className={`font-bold ${isEasyMode ? 'text-xl' : 'text-lg'} text-blue-800 mb-2`}>
-              현재 단계: {steps.find(s => s.key === currentStep)?.title}
-            </h3>
-            <p className={`${isEasyMode ? 'text-lg' : 'text-base'} text-blue-700`}>
-              {steps.find(s => s.key === currentStep)?.helpText}
-            </p>
+      <main className="container mx-auto px-4 py-8">
+        {/* 진행 단계 표시 */}
+        <div className="max-w-4xl mx-auto mb-8">
+          <div className="flex justify-center space-x-4">
+            {['menu', 'options', 'cart', 'name', 'payment', 'receipt'].map((step, index) => (
+              <div
+                key={step}
+                className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold ${
+                  step === gameState.currentStep
+                    ? 'bg-amber-500 text-white'
+                    : ['menu', 'options', 'cart', 'name', 'payment', 'receipt'].indexOf(gameState.currentStep) > index
+                    ? 'bg-amber-300 text-white'
+                    : 'bg-gray-200 text-gray-500'
+                }`}
+              >
+                {index + 1}
+              </div>
+            ))}
           </div>
-          
-          <div className="space-y-2">
-            <h4 className={`font-semibold ${isEasyMode ? 'text-lg' : 'text-base'} text-gray-900`}>
-              사용 방법:
-            </h4>
-            <ul className={`space-y-1 ${isEasyMode ? 'text-lg' : 'text-base'} text-gray-700`}>
-              <li>• 화면의 버튼을 터치하여 선택하세요</li>
-              <li>• 이전 버튼으로 단계를 되돌릴 수 있습니다</li>
-              <li>• 도움말 버튼으로 언제든지 도움을 받을 수 있습니다</li>
-            </ul>
+          <div className="text-center mt-4">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {gameState.currentStep === 'menu' && '메뉴 선택'}
+              {gameState.currentStep === 'options' && '옵션 선택'}
+              {gameState.currentStep === 'cart' && '장바구니'}
+              {gameState.currentStep === 'name' && '픽업 이름'}
+              {gameState.currentStep === 'payment' && '결제'}
+              {gameState.currentStep === 'receipt' && '영수증'}
+            </h2>
           </div>
         </div>
-      </Modal>
 
-      {/* 토스트 */}
-      {showToast && (
-        <Toast
-          message={toastMessage}
-          type="error"
-          onClose={() => setShowToast(false)}
-          isEasyMode={isEasyMode}
-        />
-      )}
+        {/* 메뉴 선택 화면 */}
+        {gameState.currentStep === 'menu' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-6xl mx-auto"
+          >
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {cafeMenus.map(menu => (
+                <motion.div
+                  key={menu.id}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => selectMenu(menu)}
+                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-amber-300"
+                >
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">{menu.img}</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{menu.name}</h3>
+                    <p className="text-2xl font-bold text-amber-600 mb-4">{menu.price.toLocaleString()}원</p>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {menu.tags?.map(tag => (
+                        <span
+                          key={tag}
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            tag === 'signature' ? 'bg-red-100 text-red-700' :
+                            tag === 'hot' ? 'bg-orange-100 text-orange-700' :
+                            tag === 'ice' ? 'bg-blue-100 text-blue-700' :
+                            'bg-gray-100 text-gray-700'
+                          }`}
+                        >
+                          {tag === 'signature' ? '시그니처' :
+                           tag === 'hot' ? 'HOT' :
+                           tag === 'ice' ? 'ICE' : tag}
+                        </span>
+                      ))}
+                    </div>
+                    {menu.allergens && (
+                      <div className="mt-3 text-xs text-red-600">
+                        알레르기: {menu.allergens.join(', ')}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* 옵션 선택 화면 */}
+        {gameState.currentStep === 'options' && gameState.selectedMenu && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="bg-white rounded-2xl p-8 shadow-lg">
+              <div className="text-center mb-8">
+                <div className="text-6xl mb-4">{gameState.selectedMenu.img}</div>
+                <h3 className="text-2xl font-bold text-gray-900">{gameState.selectedMenu.name}</h3>
+                <p className="text-lg text-gray-600">옵션을 선택해주세요</p>
+              </div>
+
+              <div className="space-y-8">
+                {/* 사이즈 선택 */}
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">사이즈</h4>
+                  <div className="flex space-x-4">
+                    {gameState.selectedMenu.options.size.map(size => (
+                      <button
+                        key={size}
+                        onClick={() => selectOption('size', size)}
+                        className={`px-6 py-3 rounded-lg border-2 font-medium transition-colors ${
+                          selectedOptions.size === size
+                            ? 'bg-amber-500 text-white border-amber-500'
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-amber-400'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 온도 선택 */}
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">온도</h4>
+                  <div className="flex space-x-4">
+                    {gameState.selectedMenu.options.temperature.map(temp => (
+                      <button
+                        key={temp}
+                        onClick={() => selectOption('temperature', temp)}
+                        className={`px-6 py-3 rounded-lg border-2 font-medium transition-colors ${
+                          selectedOptions.temperature === temp
+                            ? 'bg-amber-500 text-white border-amber-500'
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-amber-400'
+                        }`}
+                      >
+                        {temp}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 추가 옵션 */}
+                {gameState.selectedMenu.options.addOns && (
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">추가 옵션</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      {gameState.selectedMenu.options.addOns.map(addOn => (
+                        <button
+                          key={addOn.id}
+                          onClick={() => {
+                            const newAddOns = selectedOptions.addOns.includes(addOn.id)
+                              ? selectedOptions.addOns.filter(id => id !== addOn.id)
+                              : [...selectedOptions.addOns, addOn.id]
+                            selectOption('addOns', newAddOns)
+                          }}
+                          className={`p-4 rounded-lg border-2 font-medium transition-colors ${
+                            selectedOptions.addOns.includes(addOn.id)
+                              ? 'bg-amber-500 text-white border-amber-500'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-amber-400'
+                          }`}
+                        >
+                          <div>{addOn.label}</div>
+                          <div className="text-sm">+{addOn.price.toLocaleString()}원</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 당도 선택 */}
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">당도</h4>
+                  <div className="flex space-x-2">
+                    {gameState.selectedMenu.options.sweetness?.map(sweetness => (
+                      <button
+                        key={sweetness}
+                        onClick={() => selectOption('sweetness', sweetness)}
+                        className={`px-4 py-2 rounded-lg border-2 font-medium transition-colors ${
+                          selectedOptions.sweetness === sweetness
+                            ? 'bg-amber-500 text-white border-amber-500'
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-amber-400'
+                        }`}
+                      >
+                        {sweetness}%
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 flex justify-center space-x-4">
+                <button
+                  onClick={() => setGameState(prev => ({ ...prev, currentStep: 'menu' }))}
+                  className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors"
+                >
+                  뒤로
+                </button>
+                <button
+                  onClick={addToCart}
+                  className="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg transition-colors"
+                >
+                  장바구니에 추가
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* 장바구니 화면 */}
+        {gameState.currentStep === 'cart' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="bg-white rounded-2xl p-8 shadow-lg">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-gray-900">장바구니</h3>
+                <ShoppingCart className="w-8 h-8 text-amber-600" />
+              </div>
+
+              {gameState.cart.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">🛒</div>
+                  <p className="text-xl text-gray-600">장바구니가 비어있습니다</p>
+                  <button
+                    onClick={() => setGameState(prev => ({ ...prev, currentStep: 'menu' }))}
+                    className="mt-4 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg transition-colors"
+                  >
+                    메뉴 보기
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-4 mb-8">
+                    {gameState.cart.map((item, index) => {
+                      const menu = cafeMenus.find(m => m.id === item.menuId)
+                      return (
+                        <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                          <div className="flex items-center space-x-4">
+                            <div className="text-3xl">{menu?.img}</div>
+                            <div>
+                              <h4 className="font-semibold text-gray-900">{menu?.name}</h4>
+                              <p className="text-sm text-gray-600">
+                                {item.selected.size} | {item.selected.temperature}
+                                {item.selected.addOns.length > 0 && ` | ${item.selected.addOns.join(', ')}`}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => updateQuantity(index, item.qty - 1)}
+                                className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center"
+                              >
+                                -
+                              </button>
+                              <span className="w-8 text-center font-medium">{item.qty}</span>
+                              <button
+                                onClick={() => updateQuantity(index, item.qty + 1)}
+                                className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <div className="text-lg font-bold text-amber-600">
+                              {item.subTotal.toLocaleString()}원
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  <div className="border-t pt-6">
+                    <div className="flex justify-between items-center mb-6">
+                      <span className="text-xl font-semibold text-gray-900">총 금액</span>
+                      <span className="text-2xl font-bold text-amber-600">
+                        {getTotalAmount().toLocaleString()}원
+                      </span>
+                    </div>
+                    <div className="flex justify-center space-x-4">
+                      <button
+                        onClick={() => setGameState(prev => ({ ...prev, currentStep: 'menu' }))}
+                        className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors"
+                      >
+                        더 주문하기
+                      </button>
+                      <button
+                        onClick={() => setGameState(prev => ({ ...prev, currentStep: 'name' }))}
+                        className="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg transition-colors"
+                      >
+                        주문하기
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* 픽업 이름 입력 화면 */}
+        {gameState.currentStep === 'name' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-2xl mx-auto"
+          >
+            <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">픽업 이름을 입력해주세요</h3>
+              <div className="mb-8">
+                <input
+                  type="text"
+                  value={gameState.pickupName}
+                  onChange={(e) => setGameState(prev => ({ ...prev, pickupName: e.target.value }))}
+                  placeholder="이름을 입력하세요"
+                  className="w-full px-6 py-4 text-xl border-2 border-gray-300 rounded-lg focus:border-amber-500 focus:outline-none"
+                />
+              </div>
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={() => setGameState(prev => ({ ...prev, currentStep: 'cart' }))}
+                  className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors"
+                >
+                  뒤로
+                </button>
+                <button
+                  onClick={() => setPickupName(gameState.pickupName)}
+                  disabled={!gameState.pickupName.trim()}
+                  className="px-8 py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-300 text-white font-bold rounded-lg transition-colors"
+                >
+                  다음
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* 결제 화면 */}
+        {gameState.currentStep === 'payment' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-2xl mx-auto"
+          >
+            <div className="bg-white rounded-2xl p-8 shadow-lg">
+              <div className="text-center mb-8">
+                <CreditCard className="w-16 h-16 text-amber-600 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">결제 방법을 선택해주세요</h3>
+                <p className="text-gray-600">총 금액: {getTotalAmount().toLocaleString()}원</p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 mb-8">
+                <button
+                  onClick={() => processPayment('card')}
+                  disabled={gameState.isPaymentProcessing}
+                  className="p-6 bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <div className="flex items-center justify-center space-x-3">
+                    <CreditCard className="w-8 h-8 text-blue-600" />
+                    <span className="text-lg font-semibold text-blue-800">카드 결제</span>
+                  </div>
+                </button>
+                <button
+                  onClick={() => processPayment('qr')}
+                  disabled={gameState.isPaymentProcessing}
+                  className="p-6 bg-green-50 hover:bg-green-100 border-2 border-green-200 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <div className="flex items-center justify-center space-x-3">
+                    <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">QR</span>
+                    </div>
+                    <span className="text-lg font-semibold text-green-800">QR 결제</span>
+                  </div>
+                </button>
+                <button
+                  onClick={() => processPayment('cash')}
+                  disabled={gameState.isPaymentProcessing}
+                  className="p-6 bg-yellow-50 hover:bg-yellow-100 border-2 border-yellow-200 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <div className="flex items-center justify-center space-x-3">
+                    <span className="text-2xl">💵</span>
+                    <span className="text-lg font-semibold text-yellow-800">현금 결제</span>
+                  </div>
+                </button>
+              </div>
+
+              {gameState.isPaymentProcessing && (
+                <div className="text-center">
+                  <div className="animate-spin w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                  <p className="text-gray-600">결제 처리 중...</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* 영수증 화면 */}
+        {gameState.currentStep === 'receipt' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-2xl mx-auto"
+          >
+            <div className="bg-white rounded-2xl p-8 shadow-lg">
+              <div className="text-center mb-8">
+                <div className="text-6xl mb-4">🎉</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">주문 완료!</h3>
+                <p className="text-gray-600">픽업 이름: {gameState.pickupName}</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-6 mb-8">
+                <h4 className="font-semibold text-gray-900 mb-4">주문 내역</h4>
+                {gameState.cart.map((item, index) => {
+                  const menu = cafeMenus.find(m => m.id === item.menuId)
+                  return (
+                    <div key={index} className="flex justify-between items-center py-2">
+                      <span className="text-gray-700">
+                        {menu?.name} x {item.qty}
+                      </span>
+                      <span className="font-medium">{item.subTotal.toLocaleString()}원</span>
+                    </div>
+                  )
+                })}
+                <div className="border-t pt-2 mt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-gray-900">총 금액</span>
+                    <span className="font-bold text-amber-600">{getTotalAmount().toLocaleString()}원</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center">
+                <button
+                  onClick={completeGame}
+                  className="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg transition-colors"
+                >
+                  완료
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* 피드백 */}
+        <AnimatePresence>
+          {showFeedback && (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="fixed inset-0 flex items-center justify-center z-50"
+            >
+              <div className="bg-white rounded-2xl shadow-2xl p-8 text-center border-4 border-amber-200">
+                <div className="text-4xl mb-4">✅</div>
+                <p className="text-xl font-semibold text-gray-800">{feedbackMessage}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 게임 완료 화면 */}
+        {gameState.gameCompleted && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"
+          >
+            <div className="bg-white rounded-2xl shadow-2xl p-8 text-center border-4 border-amber-200 max-w-md mx-4">
+              <div className="text-6xl mb-6">🎉</div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">카페 주문 완료!</h2>
+              <div className="bg-amber-50 rounded-xl p-4 mb-6">
+                <p className="text-gray-800 mb-2">픽업 이름: {gameState.pickupName}</p>
+                <p className="text-gray-800 mb-2">주문 수량: {gameState.cart.length}개</p>
+                <p className="text-gray-800 mb-2">결제 방법: {
+                  gameState.paymentMethod === 'card' ? '카드 결제' :
+                  gameState.paymentMethod === 'qr' ? 'QR 결제' : '현금 결제'
+                }</p>
+                <p className="text-gray-800">총 금액: {getTotalAmount().toLocaleString()}원</p>
+              </div>
+              <div className="flex space-x-4 justify-center">
+                <button
+                  onClick={resetGame}
+                  className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                >
+                  다시 하기
+                </button>
+                <Link href="/kiosk-training" className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                  목록으로
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </main>
     </div>
   )
 }
