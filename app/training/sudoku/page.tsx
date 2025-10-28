@@ -479,7 +479,7 @@ export default function SudokuGame() {
           </div>
           <div className="text-center mt-4">
             <button
-              onClick={() => selectedCell && handleNumberInput(null as number)}
+              onClick={() => selectedCell && handleNumberInput(null as unknown as number)}
               disabled={!selectedCell}
               className="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg transition-colors"
             >
