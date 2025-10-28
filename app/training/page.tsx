@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
 
 // 게임 데이터 - 구현된 게임만 표시
 const games = [
-  // 시지각 및 공간 처리
   {
     id: 'pet-finder',
     name: '애완동물 찾기',
@@ -75,12 +75,11 @@ const games = [
   }
 ]
 
-// 개발 중인 게임들 (숨겨진 상태)
+// 개발 중인 게임들
 const upcomingGames = [
   // 시지각 및 공간 처리
   {
     id: 'chess',
-    name: '체스 온라인',
     category: '시지각 및 공간 처리',
     description: '공간적 사고와 전략적 계획을 훈련합니다',
     icon: '♟️',
@@ -91,7 +90,6 @@ const upcomingGames = [
   },
   {
     id: 'visual-crossword',
-    name: '비주얼 크로스 워드',
     category: '시지각 및 공간 처리',
     description: '시각적 패턴 인식과 어휘력을 개발합니다',
     icon: '📝',
@@ -102,7 +100,6 @@ const upcomingGames = [
   },
   {
     id: 'ant-escape',
-    name: '개미 탈출',
     category: '시지각 및 공간 처리',
     description: '공간 경로 찾기와 문제해결 능력을 훈련합니다',
     icon: '🐜',
@@ -115,7 +112,6 @@ const upcomingGames = [
   // 주의집중 및 선택적 주의
   {
     id: 'melody-tennis',
-    name: '멜로디 테니스',
     category: '주의집중 및 선택적 주의',
     description: '청각적 주의와 동기화 능력을 개발합니다',
     icon: '🎾',
@@ -126,7 +122,6 @@ const upcomingGames = [
   },
   {
     id: 'neon-sign',
-    name: '네온사인',
     category: '주의집중 및 선택적 주의',
     description: '시각적 주의와 추적 능력을 훈련합니다',
     icon: '💡',
@@ -137,7 +132,6 @@ const upcomingGames = [
   },
   {
     id: 'drive-me-crazy',
-    name: '나를 미치게해',
     category: '주의집중 및 선택적 주의',
     description: '복합적 주의 과제로 집중력을 향상시킵니다',
     icon: '🎯',
@@ -150,7 +144,6 @@ const upcomingGames = [
   // 기억력 및 작업기억
   {
     id: 'memory-games',
-    name: '기억력 게임',
     category: '기억력 및 작업기억',
     description: '다양한 기억 과제로 기억력을 향상시킵니다',
     icon: '🎮',
@@ -161,7 +154,6 @@ const upcomingGames = [
   },
   {
     id: 'mini-crossword',
-    name: '미니 크로스워드',
     category: '기억력 및 작업기억',
     description: '어휘 기억과 회상 능력을 개발합니다',
     icon: '📚',
@@ -172,7 +164,6 @@ const upcomingGames = [
   },
   {
     id: 'scramble',
-    name: '스크램블',
     category: '기억력 및 작업기억',
     description: '단어 조작과 기억력을 훈련합니다',
     icon: '🔤',
@@ -183,7 +174,6 @@ const upcomingGames = [
   },
   {
     id: 'solitaire',
-    name: '솔리테어',
     category: '기억력 및 작업기억',
     description: '시퀀스 기억과 계획 능력을 향상시킵니다',
     icon: '🃏',
@@ -196,7 +186,6 @@ const upcomingGames = [
   // 추론 및 문제해결
   {
     id: 'crystal-miner',
-    name: 'Crystal Miner',
     category: '추론 및 문제해결',
     description: '전략적 사고와 계획 능력을 개발합니다',
     icon: '💎',
@@ -207,7 +196,6 @@ const upcomingGames = [
   },
   {
     id: 'math-chaos',
-    name: '수학적 혼돈',
     category: '추론 및 문제해결',
     description: '수리 추론과 계산 능력을 향상시킵니다',
     icon: '🔢',
@@ -218,7 +206,6 @@ const upcomingGames = [
   },
   {
     id: 'reading-comprehension',
-    name: '독해 이해',
     category: '추론 및 문제해결',
     description: '언어적 추론과 이해력을 훈련합니다',
     icon: '📖',
@@ -229,7 +216,6 @@ const upcomingGames = [
   },
   {
     id: 'brain-battle',
-    name: '두뇌 전투',
     category: '추론 및 문제해결',
     description: '전략적 사고와 경쟁 능력을 개발합니다',
     icon: '⚔️',
@@ -242,7 +228,6 @@ const upcomingGames = [
   // 집행기능 및 인지조절
   {
     id: 'robo-factory',
-    name: 'Robo Factory',
     category: '집행기능 및 인지조절',
     description: '계획과 실행, 순서 조절 능력을 훈련합니다',
     icon: '🤖',
@@ -253,7 +238,6 @@ const upcomingGames = [
   },
   {
     id: 'color-rush',
-    name: '컬러러쉬',
     category: '집행기능 및 인지조절',
     description: '억제 통제와 반응 조절 능력을 향상시킵니다',
     icon: '🌈',
@@ -264,7 +248,6 @@ const upcomingGames = [
   },
   {
     id: 'candy-line',
-    name: '캔디 라인',
     category: '집행기능 및 인지조절',
     description: '전략적 계획과 조작 능력을 개발합니다',
     icon: '🍭',
@@ -275,7 +258,6 @@ const upcomingGames = [
   },
   {
     id: 'penguin-explorer',
-    name: '펭귄 탐험가',
     category: '집행기능 및 인지조절',
     description: '목표 지향적 행동과 계획 능력을 훈련합니다',
     icon: '🐧',
@@ -286,7 +268,6 @@ const upcomingGames = [
   },
   {
     id: 'board-games',
-    name: '보드 게임',
     category: '집행기능 및 인지조절',
     description: '전략적 사고와 의사결정 능력을 향상시킵니다',
     icon: '🎲',
@@ -312,12 +293,22 @@ export default function CognitiveLearningTrainingPage() {
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const [selectedDifficulty, setSelectedDifficulty] = useState('전체')
   const [searchTerm, setSearchTerm] = useState('')
+  const [showOpening, setShowOpening] = useState(true)
+
+  // 오프닝 애니메이션 타이머
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowOpening(false)
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   // 필터링된 게임 목록
   const filteredGames = games.filter(game => {
     const matchesCategory = selectedCategory === '전체' || game.category === selectedCategory
     const matchesDifficulty = selectedDifficulty === '전체' || game.difficulty === selectedDifficulty
-    const matchesSearch = game.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = game.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          game.description.toLowerCase().includes(searchTerm.toLowerCase())
     
     return matchesCategory && matchesDifficulty && matchesSearch
@@ -351,6 +342,91 @@ export default function CognitiveLearningTrainingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-mint-50 via-lavender-50 to-yellow-50">
+      {/* 오프닝 애니메이션 */}
+      <AnimatePresence>
+        {showOpening && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            className="fixed inset-0 bg-gradient-to-br from-mint-50 via-lavender-50 to-yellow-50 flex items-center justify-center z-50"
+          >
+            <div className="text-center">
+              {/* Link IT 로고 */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mb-8"
+              >
+                <Image
+                  src="/images/link-it-logo-main.png"
+                  alt="Link IT 로고"
+                  width={200}
+                  height={200}
+                  className="w-48 h-48 mx-auto drop-shadow-lg"
+                />
+              </motion.div>
+              
+              {/* 제목 */}
+              <motion.h1
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -20, opacity: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="text-4xl font-bold text-gray-900 mb-4"
+              >
+                Link IT
+              </motion.h1>
+              
+              {/* 부제목 */}
+              <motion.p
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -20, opacity: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="text-lg text-gray-700 mb-8"
+              >
+                인지 학습 훈련
+              </motion.p>
+              
+              {/* 로딩 애니메이션 */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, delay: 0.8 }}
+                className="flex justify-center space-x-2"
+              >
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                  className="w-3 h-3 bg-mint-400 rounded-full"
+                />
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
+                  className="w-3 h-3 bg-lavender-400 rounded-full"
+                />
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
+                  className="w-3 h-3 bg-yellow-400 rounded-full"
+                />
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 메인 콘텐츠 */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showOpening ? 0 : 1 }}
+        transition={{ duration: 0.5 }}
+        className={showOpening ? 'pointer-events-none' : ''}
+      >
       {/* 헤더 */}
       <header className="bg-white/90 backdrop-blur-sm border-b border-mint-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
@@ -421,10 +497,10 @@ export default function CognitiveLearningTrainingPage() {
             <div className="grid md:grid-cols-4 gap-4">
               {/* 검색 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">게임 검색</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">훈련 목표 검색</label>
                 <input
                   type="text"
-                  placeholder="게임명 또는 설명 검색..."
+                  placeholder="훈련 목표 또는 설명 검색..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mint-500 focus:border-mint-500"
@@ -485,15 +561,11 @@ export default function CognitiveLearningTrainingPage() {
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="text-3xl">{game.icon}</div>
                     <div>
-                      <h3 className="text-lg font-bold text-gray-900">{game.name}</h3>
-                      <p className="text-sm text-gray-600">{game.category}</p>
+                      <h3 className="text-lg font-bold text-gray-900">{game.category}</h3>
+                      <p className="text-sm text-gray-600">{game.description}</p>
                     </div>
                   </div>
 
-                  {/* 게임 설명 */}
-                  <p className="text-gray-700 mb-4 text-sm leading-relaxed">
-                    {game.description}
-                  </p>
 
                   {/* 게임 정보 */}
                   <div className="flex items-center justify-between mb-4">
@@ -534,8 +606,8 @@ export default function CognitiveLearningTrainingPage() {
                   <div className="flex items-center space-x-2 mb-2">
                     <div className="text-xl opacity-50">{game.icon}</div>
                     <div>
-                      <h4 className="text-sm font-semibold text-gray-700">{game.name}</h4>
-                      <p className="text-xs text-gray-500">{game.category}</p>
+                      <h4 className="text-sm font-semibold text-gray-700">{game.category}</h4>
+                      <p className="text-xs text-gray-500">{game.description}</p>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
@@ -565,6 +637,7 @@ export default function CognitiveLearningTrainingPage() {
           )}
         </div>
       </main>
+      </motion.div>
     </div>
   )
 }
