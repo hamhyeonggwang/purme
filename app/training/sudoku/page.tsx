@@ -137,13 +137,48 @@ export default function SudokuGame() {
     return true
   }
 
+  // 난이도별 힌트 개수 설정 (아동청소년 친화적)
+  const getHintCount = (difficulty: number): number => {
+    switch (difficulty) {
+      case 1: return 70 // 매우 쉬움 - 많은 힌트
+      case 2: return 60 // 쉬움 - 충분한 힌트
+      case 3: return 50 // 보통 - 적당한 힌트
+      case 4: return 40 // 조금 어려움
+      case 5: return 35 // 어려움
+      case 6: return 30 // 매우 어려움
+      case 7: return 25 // 극도로 어려움
+      case 8: return 20 // 전문가급
+      case 9: return 17 // 마스터급
+      case 10: return 15 // 최고급
+      default: return 50
+    }
+  }
+
+  // 난이도별 설명
+  const getDifficultyDescription = (difficulty: number): string => {
+    switch (difficulty) {
+      case 1: return "매우 쉬움 - 많은 힌트로 시작해보세요!"
+      case 2: return "쉬움 - 충분한 힌트가 있어요"
+      case 3: return "보통 - 적당한 힌트로 도전해보세요"
+      case 4: return "조금 어려움 - 논리적 사고가 필요해요"
+      case 5: return "어려움 - 집중력이 필요해요"
+      case 6: return "매우 어려움 - 고급 기술이 필요해요"
+      case 7: return "극도로 어려움 - 전문가 수준이에요"
+      case 8: return "전문가급 - 마스터만 도전하세요"
+      case 9: return "마스터급 - 최고 수준이에요"
+      case 10: return "최고급 - 거의 불가능한 수준이에요"
+      default: return "적당한 난이도예요"
+    }
+  }
+
   // 게임 시작
   const startGame = (difficulty: number) => {
     const solution = generateValidGrid()
     const grid = initializeGrid()
     
-    // 난이도에 따라 숫자 제거 (1-10단계)
-    const cellsToRemove = Math.min(81 - difficulty * 8, 60) // 최대 60개 제거
+    // 난이도에 따른 힌트 개수 설정
+    const hintCount = getHintCount(difficulty)
+    const cellsToRemove = 81 - hintCount
     
     const positions: {row: number, col: number}[] = []
     for (let i = 0; i < SUDOKU_SIZE; i++) {
@@ -335,18 +370,38 @@ export default function SudokuGame() {
 
           <div className="text-center">
             <h3 className="text-lg font-bold text-gray-900 mb-4">난이도 선택</h3>
-            <div className="grid grid-cols-5 gap-2 mb-6">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(level => (
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {[1, 2, 3, 4, 5].map(level => (
                 <button
                   key={level}
                   onClick={() => startGame(level)}
-                  className="bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-bold py-2 px-3 rounded-lg transition-colors"
+                  className={`p-4 rounded-lg transition-colors text-left ${
+                    level <= 3 
+                      ? 'bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white' 
+                      : 'bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white'
+                  }`}
+                >
+                  <div className="font-bold text-lg">{level}단계</div>
+                  <div className="text-sm opacity-90">{getDifficultyDescription(level)}</div>
+                </button>
+              ))}
+            </div>
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {[6, 7, 8, 9, 10].map(level => (
+                <button
+                  key={level}
+                  onClick={() => startGame(level)}
+                  className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 px-3 rounded-lg transition-colors"
                 >
                   {level}
                 </button>
               ))}
             </div>
-            <p className="text-sm text-gray-600">1단계(쉬움) ~ 10단계(어려움)</p>
+            <div className="text-sm text-gray-600 space-y-1">
+              <p className="text-green-600 font-semibold">🟢 1-3단계: 아동청소년 추천</p>
+              <p className="text-blue-600 font-semibold">🔵 4-5단계: 일반인 도전</p>
+              <p className="text-red-600 font-semibold">🔴 6-10단계: 전문가용</p>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -365,7 +420,9 @@ export default function SudokuGame() {
               </Link>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">스도쿠</h1>
-                <p className="text-sm text-gray-600">난이도 {gameState.difficulty}단계</p>
+                <p className="text-sm text-gray-600">
+                  난이도 {gameState.difficulty}단계 - {getDifficultyDescription(gameState.difficulty)}
+                </p>
               </div>
             </div>
 
@@ -398,11 +455,15 @@ export default function SudokuGame() {
                 <div className="text-sm text-gray-600">난이도</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-lavender-600">{gameState.hintsUsed}</div>
+                <div className="text-2xl font-bold text-lavender-600">{getHintCount(gameState.difficulty)}</div>
+                <div className="text-sm text-gray-600">힌트 개수</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-yellow-600">{gameState.hintsUsed}</div>
                 <div className="text-sm text-gray-600">힌트 사용</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600">{getGameTime()}</div>
+                <div className="text-2xl font-bold text-blue-600">{getGameTime()}</div>
                 <div className="text-sm text-gray-600">경과 시간</div>
               </div>
             </div>

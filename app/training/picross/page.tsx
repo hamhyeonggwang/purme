@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowLeft, RefreshCw, Lightbulb, CheckCircle } from 'lucide-react'
+import { ArrowLeft, RefreshCw, Lightbulb, CheckCircle, Save, Download } from 'lucide-react'
 
 interface PicrossCell {
   isFilled: boolean
@@ -21,10 +21,52 @@ interface GameState {
   startTime: number
   endTime: number | null
   hintsUsed: number
+  level: number
+  levelName: string
+  pattern: string
 }
 
-const GRID_SIZES = [5, 8, 10]
-const MAX_HINTS = 3
+interface LevelData {
+  name: string
+  size: number
+  pattern: string
+  description: string
+}
+
+const LEVELS: LevelData[] = [
+  {
+    name: "초급",
+    size: 5,
+    pattern: "heart",
+    description: "하트 모양"
+  },
+  {
+    name: "중급",
+    size: 8,
+    pattern: "house",
+    description: "집 모양"
+  },
+  {
+    name: "고급",
+    size: 10,
+    pattern: "tree",
+    description: "나무 모양"
+  },
+  {
+    name: "전문가",
+    size: 12,
+    pattern: "butterfly",
+    description: "나비 모양"
+  },
+  {
+    name: "마스터",
+    size: 15,
+    pattern: "castle",
+    description: "성 모양"
+  }
+]
+
+const MAX_HINTS = 5
 
 export default function PicrossGame() {
   const [gameState, setGameState] = useState<GameState>({

@@ -23,6 +23,8 @@ interface GameState {
   startTime: number
   endTime: number | null
   hintsUsed: number
+  difficulty: number
+  difficultyName: string
 }
 
 const DISK_COLORS = [
@@ -47,7 +49,9 @@ export default function HanoiTowerGame() {
     isComplete: false,
     startTime: Date.now(),
     endTime: null,
-    hintsUsed: 0
+    hintsUsed: 0,
+    difficulty: 0,
+    difficultyName: ''
   })
   const [showInstructions, setShowInstructions] = useState(true)
   const [numDisks, setNumDisks] = useState(3)
@@ -78,6 +82,18 @@ export default function HanoiTowerGame() {
   const startGame = (disks: number) => {
     const { towers, minMoves } = initializeGame(disks)
     
+    // 난이도 정보 설정
+    const difficultyInfo = [
+      { level: 1, name: '초급' },
+      { level: 2, name: '중급' },
+      { level: 3, name: '고급' },
+      { level: 4, name: '전문가' },
+      { level: 5, name: '마스터' }
+    ].find(info => {
+      const diskMapping = [3, 4, 5, 6, 7]
+      return diskMapping[info.level - 1] === disks
+    })
+    
     setGameState({
       towers,
       selectedTower: null,
@@ -86,7 +102,9 @@ export default function HanoiTowerGame() {
       isComplete: false,
       startTime: Date.now(),
       endTime: null,
-      hintsUsed: 0
+      hintsUsed: 0,
+      difficulty: difficultyInfo?.level || 1,
+      difficultyName: difficultyInfo?.name || '초급'
     })
     setNumDisks(disks)
     setShowInstructions(false)
@@ -289,15 +307,23 @@ export default function HanoiTowerGame() {
           </div>
 
           <div className="text-center">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">디스크 개수 선택</h3>
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              {[3, 4, 5].map(disks => (
+            <h3 className="text-lg font-bold text-gray-900 mb-4">난이도 선택</h3>
+            <div className="grid grid-cols-5 gap-3 mb-6">
+              {[
+                { disks: 3, level: 1, name: '초급' },
+                { disks: 4, level: 2, name: '중급' },
+                { disks: 5, level: 3, name: '고급' },
+                { disks: 6, level: 4, name: '전문가' },
+                { disks: 7, level: 5, name: '마스터' }
+              ].map(({ disks, level, name }) => (
                 <button
                   key={disks}
                   onClick={() => startGame(disks)}
-                  className="bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                  className="bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-bold py-3 px-4 rounded-lg transition-colors text-sm"
                 >
-                  {disks}개 디스크
+                  <div className="text-lg font-bold">{level}단계</div>
+                  <div className="text-xs opacity-90">{name}</div>
+                  <div className="text-xs opacity-75">{disks}개</div>
                 </button>
               ))}
             </div>
