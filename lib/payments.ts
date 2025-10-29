@@ -166,3 +166,4 @@ ${receiptData.method === '현금' ? `투입금액: ${receiptData.insertedAmount.
 }
 
 export const paymentManager = new PaymentManager()
+

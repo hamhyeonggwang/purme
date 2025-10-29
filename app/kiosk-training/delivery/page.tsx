@@ -743,3 +743,4 @@ export default function DeliveryKiosk() {
     </div>
   )
 }
+

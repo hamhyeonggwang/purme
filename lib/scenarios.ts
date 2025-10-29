@@ -182,3 +182,4 @@ export const getScenario = (id: string): Scenario | undefined => {
 export const getAllScenarios = (): Scenario[] => {
   return Object.values(scenarios)
 }
+
