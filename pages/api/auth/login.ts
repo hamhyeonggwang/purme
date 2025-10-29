@@ -2,7 +2,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import { connectDB } from '../lib/database'
+import connectDB from '../lib/database'
 import User from '../lib/models/User'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'linkit-super-secret-key-change-in-production-2024'

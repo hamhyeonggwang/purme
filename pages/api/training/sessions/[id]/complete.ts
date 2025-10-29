@@ -1,7 +1,7 @@
 // Next.js API Routes - 훈련 세션 완료
 import { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
-import { connectDB } from '../../../lib/database'
+import connectDB from '../../../lib/database'
 import TrainingSession from '../../../lib/models/TrainingSession'
 import User from '../../../lib/models/User'
 
@@ -113,9 +113,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (error) {
     console.error('훈련 세션 완료 오류:', error)
     
-    if (error.message.includes('토큰')) {
+    const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류'
+    
+    if (errorMessage.includes('토큰')) {
       return res.status(401).json({
-        error: error.message,
+        error: errorMessage,
         code: 'AUTH_ERROR'
       })
     }
