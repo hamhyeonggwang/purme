@@ -1059,6 +1059,14 @@ export default function KioskTrainingPage() {
                               window.location.href = '/kiosk-training/cafe'
                             } else if (training.id === 'photobooth') {
                               window.location.href = '/kiosk-training/photobooth'
+                            } else if (training.id === 'restaurant') {
+                              window.location.href = '/kiosk-training/restaurant'
+                            } else if (training.id === 'train') {
+                              window.location.href = '/kiosk-training/train'
+                            } else if (training.id === 'civil') {
+                              window.location.href = '/kiosk-training/civil'
+                            } else if (training.id === 'delivery') {
+                              window.location.href = '/kiosk-training/delivery'
                             } else {
                               startTraining(training)
                             }

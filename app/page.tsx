@@ -61,12 +61,33 @@ export default function HomePage() {
               <div className="text-sm text-gray-600 bg-mint-100 px-3 py-1 rounded-full">
                 🎮 게스트 모드
               </div>
-              <Link
-                href="/basic-training"
-                className="bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-lg"
-              >
-                시작하기
-              </Link>
+              <div className="relative group">
+                <button className="bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-lg">
+                  시작하기
+                </button>
+                <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="py-2">
+                    <Link href="/basic-training" className="block px-4 py-3 text-sm text-gray-700 hover:bg-mint-50 hover:text-mint-600 transition-colors">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">👁️</span>
+                        <span className="font-medium">시지각 훈련</span>
+                      </div>
+                    </Link>
+                    <Link href="/training" className="block px-4 py-3 text-sm text-gray-700 hover:bg-lavender-50 hover:text-lavender-600 transition-colors">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">🧠</span>
+                        <span className="font-medium">인지 학습 훈련</span>
+                      </div>
+                    </Link>
+                    <Link href="/kiosk-training" className="block px-4 py-3 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">🖥️</span>
+                        <span className="font-medium">키오스크 훈련</span>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -110,10 +131,21 @@ export default function HomePage() {
                   </p>
                   <p className="text-sm text-gray-600 mt-2">데이터 기반 맞춤형 인지재활 솔루션</p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link href="/basic-training" className="bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors shadow-lg text-center">
-                    시작하기
-                  </Link>
+                <div className="flex flex-col gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Link href="/basic-training" className="bg-gradient-to-r from-mint-500 to-mint-600 hover:from-mint-600 hover:to-mint-700 text-white font-bold py-4 px-6 rounded-lg text-lg transition-colors shadow-lg text-center flex items-center justify-center space-x-2">
+                      <span className="text-xl">👁️</span>
+                      <span>시지각 훈련</span>
+                    </Link>
+                    <Link href="/training" className="bg-gradient-to-r from-lavender-500 to-lavender-600 hover:from-lavender-600 hover:to-lavender-700 text-white font-bold py-4 px-6 rounded-lg text-lg transition-colors shadow-lg text-center flex items-center justify-center space-x-2">
+                      <span className="text-xl">🧠</span>
+                      <span>인지 학습 훈련</span>
+                    </Link>
+                    <Link href="/kiosk-training" className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-4 px-6 rounded-lg text-lg transition-colors shadow-lg text-center flex items-center justify-center space-x-2">
+                      <span className="text-xl">🖥️</span>
+                      <span>키오스크 훈련</span>
+                    </Link>
+                  </div>
                   <Link href="/training" className="border-2 border-mint-500 text-mint-600 hover:bg-mint-500 hover:text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors text-center">
                     평가하기
                   </Link>
@@ -375,11 +407,22 @@ export default function HomePage() {
               <span className="font-semibold text-yellow-200"> 디지털 인지재활</span>의 
               혁신을 경험해보세요
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/basic-training" className="bg-white text-mint-600 hover:bg-gray-100 font-bold py-4 px-8 rounded-lg text-lg transition-colors shadow-lg text-center">
-                시작하기
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center max-w-4xl mx-auto">
+              <Link href="/basic-training" className="bg-white text-mint-600 hover:bg-mint-50 font-bold py-4 px-6 rounded-lg text-lg transition-colors shadow-lg text-center flex items-center justify-center space-x-2">
+                <span className="text-xl">👁️</span>
+                <span>시지각 훈련</span>
               </Link>
-              <Link href="/training" className="border-2 border-white text-white hover:bg-white hover:text-mint-600 font-bold py-4 px-8 rounded-lg text-lg transition-colors text-center">
+              <Link href="/training" className="bg-white text-lavender-600 hover:bg-lavender-50 font-bold py-4 px-6 rounded-lg text-lg transition-colors shadow-lg text-center flex items-center justify-center space-x-2">
+                <span className="text-xl">🧠</span>
+                <span>인지 학습 훈련</span>
+              </Link>
+              <Link href="/kiosk-training" className="bg-white text-yellow-600 hover:bg-yellow-50 font-bold py-4 px-6 rounded-lg text-lg transition-colors shadow-lg text-center flex items-center justify-center space-x-2">
+                <span className="text-xl">🖥️</span>
+                <span>키오스크 훈련</span>
+              </Link>
+            </div>
+            <div className="mt-4">
+              <Link href="/training" className="border-2 border-white text-white hover:bg-white hover:text-mint-600 font-bold py-4 px-8 rounded-lg text-lg transition-colors text-center inline-block">
                 상담 문의
               </Link>
             </div>
