@@ -49,20 +49,6 @@ export default function ColorMatchingGame() {
     isCorrect: null
   })
 
-  // 게임 시작
-  const startGame = useCallback(() => {
-    setGameState(prev => ({
-      ...prev,
-      isPlaying: true,
-      isGameOver: false,
-      currentRound: 1,
-      score: 0,
-      correctAnswers: 0,
-      totalAnswers: 0
-    }))
-    generateNewRound()
-  }, [generateNewRound])
-
   // 새 라운드 생성
   const generateNewRound = useCallback(() => {
     const shuffledColors = [...colors].sort(() => Math.random() - 0.5)
@@ -77,6 +63,20 @@ export default function ColorMatchingGame() {
       showFeedback: false
     }))
   }, [])
+
+  // 게임 시작
+  const startGame = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      isPlaying: true,
+      isGameOver: false,
+      currentRound: 1,
+      score: 0,
+      correctAnswers: 0,
+      totalAnswers: 0
+    }))
+    generateNewRound()
+  }, [generateNewRound])
 
   // 색상 선택
   const selectColor = useCallback((selectedValue: string) => {

@@ -565,7 +565,7 @@ export default function DeliveryKiosk() {
                       </button>
                       <button
                         onClick={confirmOrder}
-                        disabled={gameState.selectedStore && getTotalAmount() < gameState.selectedStore.minOrder}
+                        disabled={!!(gameState.selectedStore && getTotalAmount() < gameState.selectedStore.minOrder)}
                         className="px-8 py-3 bg-violet-500 hover:bg-violet-600 disabled:bg-gray-300 text-white font-bold rounded-lg transition-colors"
                       >
                         주문하기

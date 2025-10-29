@@ -146,7 +146,7 @@ export default function AdminPage() {
       icon: UserCheck,
       action: () => {
         // 새 사용자 추가 모달 또는 페이지로 이동
-        toast.info('새 사용자 추가 기능은 준비 중입니다')
+        toast('새 사용자 추가 기능은 준비 중입니다')
       }
     },
     {
@@ -154,7 +154,7 @@ export default function AdminPage() {
       description: '시스템 데이터 백업',
       icon: Database,
       action: () => {
-        toast.info('데이터 백업 기능은 준비 중입니다')
+        toast('데이터 백업 기능은 준비 중입니다')
       }
     },
     {
@@ -162,7 +162,7 @@ export default function AdminPage() {
       description: '보안 로그 및 접근 기록 확인',
       icon: Shield,
       action: () => {
-        toast.info('보안 감사 기능은 준비 중입니다')
+        toast('보안 감사 기능은 준비 중입니다')
       }
     }
   ]

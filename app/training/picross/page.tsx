@@ -78,7 +78,10 @@ export default function PicrossGame() {
     isComplete: false,
     startTime: Date.now(),
     endTime: null,
-    hintsUsed: 0
+    hintsUsed: 0,
+    level: 1,
+    levelName: '초급',
+    pattern: 'heart'
   })
   const [currentTool, setCurrentTool] = useState<'fill' | 'mark'>('fill')
   const [showInstructions, setShowInstructions] = useState(true)
@@ -190,6 +193,8 @@ export default function PicrossGame() {
       }))
     )
 
+    const levelData = LEVELS.find(l => l.size === size) || LEVELS[0]
+
     setGameState({
       grid,
       rowHints,
@@ -199,7 +204,10 @@ export default function PicrossGame() {
       isComplete: false,
       startTime: Date.now(),
       endTime: null,
-      hintsUsed: 0
+      hintsUsed: 0,
+      level: LEVELS.findIndex(l => l.size === size) + 1 || 1,
+      levelName: levelData.name,
+      pattern: levelData.pattern
     })
     setShowInstructions(false)
   }
@@ -337,7 +345,10 @@ export default function PicrossGame() {
       isComplete: false,
       startTime: Date.now(),
       endTime: null,
-      hintsUsed: 0
+      hintsUsed: 0,
+      level: 1,
+      levelName: '초급',
+      pattern: 'heart'
     })
     setSelectedCell(null)
     setShowInstructions(true)
@@ -400,13 +411,13 @@ export default function PicrossGame() {
           <div className="text-center">
             <h3 className="text-lg font-bold text-gray-900 mb-4">크기 선택</h3>
             <div className="grid grid-cols-3 gap-4 mb-6">
-              {GRID_SIZES.map(size => (
+              {LEVELS.map(level => (
                 <button
-                  key={size}
-                  onClick={() => startGame(size)}
+                  key={level.size}
+                  onClick={() => startGame(level.size)}
                   className="bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
                 >
-                  {size}×{size}
+                  {level.size}×{level.size}
                 </button>
               ))}
             </div>

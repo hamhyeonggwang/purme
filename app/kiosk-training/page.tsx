@@ -15,7 +15,7 @@ interface KioskTraining {
   difficulty: 'beginner' | 'intermediate' | 'advanced'
   duration: number
   category: 'touch' | 'voice' | 'visual' | 'navigation'
-  theme: 'atm' | 'hospital' | 'shopping' | 'library' | 'pharmacy' | 'photobooth'
+  theme: 'atm' | 'hospital' | 'shopping' | 'library' | 'pharmacy' | 'photobooth' | 'cafe' | 'restaurant' | 'train' | 'civil' | 'delivery'
   steps: TrainingStep[]
 }
 

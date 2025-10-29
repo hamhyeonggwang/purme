@@ -247,7 +247,9 @@ export default function HanoiTowerGame() {
       isComplete: false,
       startTime: Date.now(),
       endTime: null,
-      hintsUsed: 0
+      hintsUsed: 0,
+      difficulty: 1,
+      difficultyName: '초급'
     })
     setShowInstructions(true)
   }

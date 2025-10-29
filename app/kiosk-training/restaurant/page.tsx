@@ -11,9 +11,9 @@ interface Dish {
   price: number
   img: string
   category: string
-  allergens?: ('gluten' | 'milk' | 'egg' | 'peanut')[]
+  allergens?: ('gluten' | 'milk' | 'egg' | 'peanut' | 'soy')[]
   origin?: { country: string; item: string }[]
-  options?: { spice?: (0 | 1 | 2 | 3); portion?: ('S' | 'M' | 'L') }
+  options?: { spice?: (0 | 1 | 2 | 3)[]; portion?: ('S' | 'M' | 'L')[] }
 }
 
 interface CartItem {
@@ -485,7 +485,8 @@ export default function RestaurantKiosk() {
                             >
                               {allergen === 'gluten' ? '글루텐' :
                                allergen === 'milk' ? '우유' :
-                               allergen === 'egg' ? '계란' : '견과류'}
+                               allergen === 'egg' ? '계란' :
+                               allergen === 'soy' ? '대두' : '견과류'}
                             </span>
                           ))}
                         </div>
