@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 
 interface FocusTarget {
   id: string
@@ -116,7 +117,7 @@ export default function FocusTrainingPage() {
       }, 3000)
 
     } catch (error) {
-      console.error('Failed to start training session:', error)
+      toast.error('훈련 세션 시작에 실패했습니다')
     }
   }
 
@@ -165,27 +166,23 @@ export default function FocusTrainingPage() {
   const saveGameResults = async () => {
     if (!gameState.sessionId) return
 
-    try {
-      const timeSpent = gameState.startTime ? Date.now() - gameState.startTime : 0
-      const accuracy = gameState.totalAnswers > 0 ? (gameState.correctAnswers / gameState.totalAnswers) * 100 : 0
+    const timeSpent = gameState.startTime ? Date.now() - gameState.startTime : 0
+    const accuracy = gameState.totalAnswers > 0 ? (gameState.correctAnswers / gameState.totalAnswers) * 100 : 0
 
-      // 게임 결과를 로컬 스토리지에 저장
-      try {
-        const gameHistory = JSON.parse(localStorage.getItem("gameHistory") || "[]")
-        gameHistory.push({
-          game: "spatial-relationship",
-          timestamp: new Date().toISOString(),
-          score: gameState.score,
-          accuracy: Math.round(accuracy),
-          timeSpent: Math.round(timeSpent / 1000),
-          level: gameState.currentLevel
-        })
-        localStorage.setItem("gameHistory", JSON.stringify(gameHistory.slice(-50)))
-      } catch (error) {
-        console.log("게임 결과 저장 실패:", error)
-      }
+    // 게임 결과를 로컬 스토리지에 저장
+    try {
+      const gameHistory = JSON.parse(localStorage.getItem("gameHistory") || "[]")
+      gameHistory.push({
+        game: "spatial-relationship",
+        timestamp: new Date().toISOString(),
+        score: gameState.score,
+        accuracy: Math.round(accuracy),
+        timeSpent: Math.round(timeSpent / 1000),
+        level: gameState.currentLevel
+      })
+      localStorage.setItem("gameHistory", JSON.stringify(gameHistory.slice(-50)))
     } catch (error) {
-      console.error('Failed to save game results:', error)
+      // 게임 결과 저장 실패 (무시)
     }
   }
 

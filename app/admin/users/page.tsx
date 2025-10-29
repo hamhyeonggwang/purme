@@ -10,7 +10,6 @@ import {
   Trash2, 
   UserCheck, 
   UserX,
-  Plus,
   RefreshCw,
   ChevronLeft,
   ChevronRight
@@ -66,7 +65,6 @@ export default function UserManagement() {
       const response = await userAPI.getUsers()
       setUsers(response.users || [])
     } catch (error) {
-      console.error('사용자 목록 로드 실패:', error)
       toast.error('사용자 목록을 불러오는데 실패했습니다')
     } finally {
       setLoading(false)
@@ -121,7 +119,6 @@ export default function UserManagement() {
       toast.success(`사용자가 ${isActive ? '활성화' : '비활성화'}되었습니다`)
       loadUsers()
     } catch (error) {
-      console.error('사용자 상태 변경 실패:', error)
       toast.error('사용자 상태 변경에 실패했습니다')
     }
   }
@@ -135,7 +132,6 @@ export default function UserManagement() {
       toast.success('사용자가 삭제되었습니다')
       loadUsers()
     } catch (error) {
-      console.error('사용자 삭제 실패:', error)
       toast.error('사용자 삭제에 실패했습니다')
     }
   }
@@ -157,7 +153,6 @@ export default function UserManagement() {
       setSelectedUser(null)
       loadUsers()
     } catch (error) {
-      console.error('사용자 업데이트 실패:', error)
       toast.error('사용자 정보 업데이트에 실패했습니다')
     }
   }

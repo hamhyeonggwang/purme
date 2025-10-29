@@ -61,7 +61,7 @@ export default function ColorMatchingGame() {
       totalAnswers: 0
     }))
     generateNewRound()
-  }, [])
+  }, [generateNewRound])
 
   // 새 라운드 생성
   const generateNewRound = useCallback(() => {
@@ -142,10 +142,10 @@ export default function ColorMatchingGame() {
         })
         localStorage.setItem('gameHistory', JSON.stringify(gameHistory.slice(-50))) // 최근 50개만 저장
       } catch (error) {
-        console.log('게임 결과 저장 실패:', error)
+        // 게임 결과 저장 실패 (무시)
       }
     }
-  }, [gameState.isGameOver, gameState.score, gameState.correctAnswers, gameState.totalAnswers])
+  }, [gameState.isGameOver, gameState.score, gameState.correctAnswers, gameState.totalAnswers, gameState.totalRounds])
 
   const accuracy = gameState.totalAnswers > 0 ? Math.round((gameState.correctAnswers / gameState.totalAnswers) * 100) : 0
 
