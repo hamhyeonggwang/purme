@@ -219,7 +219,7 @@ export default function AboutPage() {
                 <h3 className="text-2xl font-black text-gray-900 mb-4">기억력 및 작업기억</h3>
                 <p className="text-gray-700 mb-6 leading-relaxed">
                   <span className="font-semibold text-yellow-600">단기 및 작업기억</span>을 통해 
-                  성인기의 <span className="font-semibold text-gray-800">학습 능력</span>과 
+                  성인기의 <span className="font-semibold text-gray-800">훈련능력</span>과 
                   <span className="font-semibold text-yellow-600">정보 처리</span>를 강화합니다.
                 </p>
                 <ul className="text-sm text-gray-600 space-y-2">
@@ -317,7 +317,7 @@ export default function AboutPage() {
                       <div>
                         <h4 className="text-lg font-bold text-gray-900 mb-2">고등교육 준비</h4>
                         <p className="text-gray-700 leading-relaxed">
-                          <span className="font-semibold text-lavender-600">집중력과 학습 능력</span>이 향상되어 
+                          <span className="font-semibold text-lavender-600">집중력과 훈련능력</span>이 향상되어 
                           대학 진학과 <span className="font-semibold text-gray-800">전문 분야 학습</span>을 위한 
                           기초가 마련됩니다.
                         </p>
@@ -444,7 +444,7 @@ export default function AboutPage() {
                 </ul>
               </div>
               <div>
-                <h4 className="font-bold mb-4">연락처</h4>
+                <h4 className="font-bold mb-4">연구 및 개발</h4>
                 <p className="text-sm text-gray-400">
                   푸르메재단 넥슨어린이재활병원<br />
                   학령기치료팀

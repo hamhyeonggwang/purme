@@ -353,7 +353,7 @@ export default function VisualPerceptionTrainingPage() {
                 </ul>
               </div>
               <div>
-                <h4 className="font-bold mb-4">연락처</h4>
+                <h4 className="font-bold mb-4">연구 및 개발</h4>
                 <p className="text-sm text-gray-400">
                   푸르메재단 넥슨어린이재활병원<br />
                   학령기치료팀

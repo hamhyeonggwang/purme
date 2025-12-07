@@ -43,7 +43,7 @@ export default function HomePage() {
                       시지각 훈련
                     </Link>
                     <Link href="/training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-lavender-50 hover:text-lavender-600 transition-colors">
-                      인지 학습 훈련
+                      인지 훈련
                     </Link>
                     <Link href="/kiosk-training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
                       키오스크훈련
@@ -59,7 +59,7 @@ export default function HomePage() {
             {/* 게스트 모드 표시 */}
             <div className="flex items-center space-x-4">
               <div className="text-sm text-gray-600 bg-mint-100 px-3 py-1 rounded-full">
-                🎮 게스트 모드
+                환영합니다
               </div>
               <div className="relative group">
                 <button className="bg-gradient-to-r from-mint-500 to-lavender-500 hover:from-mint-600 hover:to-lavender-600 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-lg">
@@ -76,7 +76,7 @@ export default function HomePage() {
                     <Link href="/training" className="block px-4 py-3 text-sm text-gray-700 hover:bg-lavender-50 hover:text-lavender-600 transition-colors">
                       <div className="flex items-center space-x-2">
                         <span className="text-lg">🧠</span>
-                        <span className="font-medium">인지 학습 훈련</span>
+                        <span className="font-medium">인지 훈련</span>
                       </div>
                     </Link>
                     <Link href="/kiosk-training" className="block px-4 py-3 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
@@ -139,16 +139,16 @@ export default function HomePage() {
                     </Link>
                     <Link href="/training" className="bg-gradient-to-r from-lavender-500 to-lavender-600 hover:from-lavender-600 hover:to-lavender-700 text-white font-bold py-4 px-6 rounded-lg text-lg transition-colors shadow-lg text-center flex items-center justify-center space-x-2">
                       <span className="text-xl">🧠</span>
-                      <span>인지 학습 훈련</span>
+                      <span>인지 훈련</span>
                     </Link>
                     <Link href="/kiosk-training" className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-4 px-6 rounded-lg text-lg transition-colors shadow-lg text-center flex items-center justify-center space-x-2">
                       <span className="text-xl">🖥️</span>
                       <span>키오스크 훈련</span>
                     </Link>
                   </div>
-                  <Link href="/training" className="border-2 border-mint-500 text-mint-600 hover:bg-mint-500 hover:text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors text-center">
+                  <a href="https://assess-beige.vercel.app/" target="_blank" rel="noopener noreferrer" className="border-2 border-mint-500 text-mint-600 hover:bg-mint-500 hover:text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors text-center">
                     평가하기
-                  </Link>
+                  </a>
                 </div>
               </div>
 
@@ -223,17 +223,6 @@ export default function HomePage() {
                           </div>
                         </div>
                       </div>
-                      
-                      {/* 진행률 표시 */}
-                      <div className="mt-6 bg-white rounded-xl p-4">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm font-semibold text-gray-800">오늘의 목표</span>
-                          <span className="text-sm text-gray-500">3/5 완료</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div className="bg-gradient-to-r from-mint-500 to-lavender-500 h-2 rounded-full w-3/5"></div>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -279,7 +268,7 @@ export default function HomePage() {
                 </ul>
               </div>
 
-              {/* 인지 학습 */}
+              {/* 인지 훈련*/}
               <div className="bg-gradient-to-br from-lavender-50 to-lavender-100 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
                 <div className="w-16 h-16 bg-lavender-500 rounded-2xl flex items-center justify-center mb-6">
                   <span className="text-white text-2xl">🧠</span>
@@ -352,7 +341,7 @@ export default function HomePage() {
                       <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">임상 효과</h3>
                       <p className="text-gray-700 font-light leading-relaxed">
                         <span className="font-semibold text-lavender-600">인지 기능 향상</span> 및 
-                        <span className="font-semibold text-gray-800"> 학습 참여 증진</span>, 
+                        <span className="font-semibold text-gray-800"> 훈련참여 증진</span>, 
                         <span className="font-semibold text-mint-600"> 디지털 리터러시</span> 향상
                       </p>
                     </div>
@@ -364,7 +353,7 @@ export default function HomePage() {
                     <div>
                       <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">사회적 효과</h3>
                       <p className="text-gray-700 font-light leading-relaxed">
-                        <span className="font-semibold text-yellow-600">학습 및 사회 적응</span> 향상, 
+                        <span className="font-semibold text-yellow-600">훈련및 사회 적응</span> 향상, 
                         <span className="font-semibold text-gray-800"> 실시간 데이터 분석</span> 및 
                         <span className="font-semibold text-mint-600"> 개인화 추천</span>
                       </p>
@@ -381,7 +370,7 @@ export default function HomePage() {
                   </div>
                   <div className="border-l-4 border-green-600 pl-4">
                     <p className="text-sm text-gray-600 mb-1">Kim & Park, 2020</p>
-                    <p className="text-gray-800">시지각 처리 및 시공간 인지 향상은 학습 참여 및 일상 적응에 직결</p>
+                    <p className="text-gray-800">시지각 처리 및 시공간 인지 향상은 훈련참여 및 일상 적응에 직결</p>
                   </div>
                   <div className="border-l-4 border-purple-600 pl-4">
                     <p className="text-sm text-gray-600 mb-1">Cho et al., 2023</p>
@@ -414,7 +403,7 @@ export default function HomePage() {
               </Link>
               <Link href="/training" className="bg-white text-lavender-600 hover:bg-lavender-50 font-bold py-4 px-6 rounded-lg text-lg transition-colors shadow-lg text-center flex items-center justify-center space-x-2">
                 <span className="text-xl">🧠</span>
-                <span>인지 학습 훈련</span>
+                <span>인지 훈련</span>
               </Link>
               <Link href="/kiosk-training" className="bg-white text-yellow-600 hover:bg-yellow-50 font-bold py-4 px-6 rounded-lg text-lg transition-colors shadow-lg text-center flex items-center justify-center space-x-2">
                 <span className="text-xl">🖥️</span>
@@ -422,9 +411,9 @@ export default function HomePage() {
               </Link>
             </div>
             <div className="mt-4">
-              <Link href="/training" className="border-2 border-white text-white hover:bg-white hover:text-mint-600 font-bold py-4 px-8 rounded-lg text-lg transition-colors text-center inline-block">
+              <a href="http://www.purmehospital.org/" target="_blank" rel="noopener noreferrer" className="border-2 border-white text-white hover:bg-white hover:text-mint-600 font-bold py-4 px-8 rounded-lg text-lg transition-colors text-center inline-block">
                 상담 문의
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -454,8 +443,8 @@ export default function HomePage() {
                 <h4 className="font-bold mb-4">프로그램</h4>
                 <ul className="space-y-2 text-sm text-gray-400">
                   <li>시지각 훈련</li>
-                  <li>인지 학습</li>
-                  <li>키오스크 응용</li>
+                  <li>인지 훈련</li>
+                  <li>키오스크 훈련</li>
                 </ul>
               </div>
               <div>
@@ -467,7 +456,7 @@ export default function HomePage() {
                 </ul>
               </div>
               <div>
-                <h4 className="font-bold mb-4">연락처</h4>
+                <h4 className="font-bold mb-4">연구 및 개발</h4>
                 <p className="text-sm text-gray-400">
                   푸르메재단 넥슨어린이재활병원<br />
                   학령기치료팀

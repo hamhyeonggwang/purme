@@ -443,7 +443,7 @@ export default function CognitiveLearningTrainingPage() {
                 transition={{ duration: 0.6, delay: 0.6 }}
                 className="text-lg text-gray-700 mb-8"
               >
-                인지 학습 훈련
+                인지 훈련
               </motion.p>
               
               {/* 로딩 애니메이션 */}
@@ -497,7 +497,7 @@ export default function CognitiveLearningTrainingPage() {
               />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Link IT</h1>
-                <p className="text-xs text-gray-500">인지 학습 훈련</p>
+                <p className="text-xs text-gray-500">인지 훈련</p>
               </div>
             </div>
 
@@ -519,7 +519,7 @@ export default function CognitiveLearningTrainingPage() {
                       시지각 훈련
                     </Link>
                     <Link href="/training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-lavender-50 hover:text-lavender-600 transition-colors">
-                      인지 학습 훈련
+                      인지 훈련
                     </Link>
                     <Link href="/kiosk-training" className="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-600 transition-colors">
                       키오스크훈련

@@ -66,7 +66,7 @@ export interface VisualStimulus {
   size: { width: number; height: number }
 }
 
-// 인지 학습 관련 타입
+// 인지 훈련관련 타입
 export interface CognitiveTraining {
   id: string
   type: CognitiveTrainingType

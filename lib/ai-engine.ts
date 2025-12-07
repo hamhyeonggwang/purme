@@ -245,7 +245,7 @@ class AIEngine {
     }
   }
 
-  // 5. 예측적 학습 분석
+  // 5. 예측적 훈련분석
   predictLearningProgress(userId: string): LearningPrediction {
     const userHistory = this.userData.get(userId) || []
     const recentSessions = userHistory.slice(-20)
@@ -397,7 +397,7 @@ class AIEngine {
     const recommendations = []
     
     if (learningRate > 0.1) {
-      recommendations.push('빠른 학습 속도! 더 어려운 도전을 해보세요')
+      recommendations.push('빠른 훈련속도! 더 어려운 도전을 해보세요')
     } else if (learningRate < 0.05) {
       recommendations.push('꾸준한 연습이 필요해요. 매일 조금씩 해보세요')
     }
