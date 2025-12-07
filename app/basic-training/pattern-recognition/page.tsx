@@ -367,10 +367,12 @@ export default function ColorRecognitionPage() {
                 {gameState.showTarget ? '이 색상을 기억하세요!' : '같은 색상을 찾아주세요!'}
               </h3>
               <div className="flex items-center justify-center space-x-4">
-                <div 
-                  className="w-20 h-20 rounded-full border-4 border-gray-300 shadow-lg"
-                  style={{ backgroundColor: gameState.targetColor }}
-                ></div>
+                {gameState.showTarget && (
+                  <div 
+                    className="w-20 h-20 rounded-full border-4 border-gray-300 shadow-lg"
+                    style={{ backgroundColor: gameState.targetColor }}
+                  ></div>
+                )}
                 <div className="text-lg font-semibold text-gray-700">
                   {gameState.showTarget ? '3초 후 사라집니다' : '같은 색상을 선택하세요'}
                 </div>
