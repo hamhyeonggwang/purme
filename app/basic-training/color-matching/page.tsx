@@ -53,12 +53,15 @@ export default function ColorMatchingGame() {
   const generateNewRound = useCallback(() => {
     const shuffledColors = [...colors].sort(() => Math.random() - 0.5)
     const correctColor = shuffledColors[0]
+    // 정답을 포함한 4개의 색상 선택
     const options = shuffledColors.slice(0, 4)
+    // 옵션 배열을 랜덤하게 섞어서 정답 위치를 랜덤하게 만듦
+    const shuffledOptions = options.sort(() => Math.random() - 0.5)
     
     setGameState(prev => ({
       ...prev,
       currentColor: correctColor.value,
-      colorOptions: options.map(color => color.value),
+      colorOptions: shuffledOptions.map(color => color.value),
       selectedColor: null,
       showFeedback: false
     }))

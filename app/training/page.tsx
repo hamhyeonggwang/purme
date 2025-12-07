@@ -19,17 +19,6 @@ const games = [
     implemented: true
   },
   {
-    id: 'picross',
-    name: '노노그램',
-    category: '시지각 및 공간 처리',
-    description: '힌트 숫자를 보고 그림을 완성하는 퍼즐',
-    icon: '🎨',
-    difficulty: '중급',
-    duration: '20-40분',
-    color: 'mint',
-    implemented: true
-  },
-  {
     id: 'lights-out',
     name: '라이트 아웃',
     category: '주의집중 및 선택적 주의',
@@ -51,17 +40,6 @@ const games = [
     color: 'lavender',
     implemented: true
   },
-  {
-    id: 'word-search',
-    name: '워드 서치',
-    category: '시지각 및 공간 처리',
-    description: '격자에서 단어를 찾는 시지각 퍼즐',
-    icon: '🔍',
-    difficulty: '초급',
-    duration: '10-25분',
-    color: 'mint',
-    implemented: true
-  }
 ]
 
 // 개발 중인 게임들

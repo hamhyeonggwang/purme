@@ -285,18 +285,80 @@ export default function SudokuGame() {
 
   // 정답 체크
   const checkSolution = () => {
-    const isComplete = gameState.grid.every(row => 
-      row.every(cell => cell.value !== null && !cell.isError)
+    // 모든 셀이 채워져 있는지 확인
+    const allFilled = gameState.grid.every(row => 
+      row.every(cell => cell.value !== null)
     )
     
-    if (isComplete) {
+    if (!allFilled) {
+      alert('아직 완성되지 않았습니다! 모든 셀을 채워주세요.')
+      return
+    }
+    
+    // 에러가 있는지 확인
+    const hasErrors = gameState.grid.some(row => 
+      row.some(cell => cell.isError)
+    )
+    
+    if (hasErrors) {
+      alert('아직 완성되지 않았습니다! 잘못된 숫자가 있습니다.')
+      return
+    }
+    
+    // 스도쿠 규칙에 맞는지 확인 (각 행, 열, 박스에 1-9가 중복 없이 있는지)
+    const gridValues = gameState.grid.map(row => row.map(cell => cell.value || 0))
+    let isValid = true
+    
+    // 각 행 확인
+    for (let row = 0; row < SUDOKU_SIZE; row++) {
+      const rowValues = gridValues[row]
+      const uniqueValues = new Set(rowValues.filter(v => v !== 0))
+      if (uniqueValues.size !== SUDOKU_SIZE || rowValues.some(v => v < 1 || v > 9)) {
+        isValid = false
+        break
+      }
+    }
+    
+    // 각 열 확인
+    if (isValid) {
+      for (let col = 0; col < SUDOKU_SIZE; col++) {
+        const colValues = gridValues.map(row => row[col])
+        const uniqueValues = new Set(colValues.filter(v => v !== 0))
+        if (uniqueValues.size !== SUDOKU_SIZE || colValues.some(v => v < 1 || v > 9)) {
+          isValid = false
+          break
+        }
+      }
+    }
+    
+    // 각 박스 확인
+    if (isValid) {
+      for (let boxRow = 0; boxRow < BOX_SIZE; boxRow++) {
+        for (let boxCol = 0; boxCol < BOX_SIZE; boxCol++) {
+          const boxValues: number[] = []
+          for (let i = 0; i < BOX_SIZE; i++) {
+            for (let j = 0; j < BOX_SIZE; j++) {
+              boxValues.push(gridValues[boxRow * BOX_SIZE + i][boxCol * BOX_SIZE + j])
+            }
+          }
+          const uniqueValues = new Set(boxValues.filter(v => v !== 0))
+          if (uniqueValues.size !== SUDOKU_SIZE || boxValues.some(v => v < 1 || v > 9)) {
+            isValid = false
+            break
+          }
+        }
+        if (!isValid) break
+      }
+    }
+    
+    if (isValid) {
       setGameState(prev => ({
         ...prev,
         isComplete: true,
         endTime: Date.now()
       }))
     } else {
-      alert('아직 완성되지 않았습니다!')
+      alert('아직 완성되지 않았습니다! 스도쿠 규칙을 확인해주세요.')
     }
   }
 
