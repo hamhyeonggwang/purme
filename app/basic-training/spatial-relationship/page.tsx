@@ -215,10 +215,41 @@ export default function SpatialRelationshipPage() {
       gridSize: newGridSize,
       targetPositions: newTargetPositions,
       currentTargetIndex: 0,
-      reactionTimes: []
+      reactionTimes: [],
+      showTargets: false
     }))
 
-    setTimeout(() => showNextTarget(), 1000)
+    // 상태 업데이트 후 별표 표시
+    setTimeout(() => {
+      setGameState(prev => {
+        if (prev.currentTargetIndex >= prev.targetPositions.length) {
+          return prev
+        }
+
+        const targetPos = prev.targetPositions[prev.currentTargetIndex]
+        const updatedGrid = prev.grid.map((cell, index) => ({
+          ...cell,
+          isTarget: index === targetPos,
+          showTarget: index === targetPos
+        }))
+
+        return {
+          ...prev,
+          grid: updatedGrid,
+          showTargets: true
+        }
+      })
+      setTargetStartTime(Date.now())
+
+      // 2초 후 타겟 숨기기
+      setTimeout(() => {
+        setGameState(prev => ({
+          ...prev,
+          showTargets: false,
+          grid: prev.grid.map(cell => ({ ...cell, showTarget: false }))
+        }))
+      }, 2000)
+    }, 1000)
   }
 
   const saveGameResults = async () => {

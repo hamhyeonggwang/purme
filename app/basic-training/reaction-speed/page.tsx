@@ -206,10 +206,10 @@ export default function ReactionSpeedPage() {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}
-                        className="w-16 h-16 bg-green-500 rounded-full cursor-pointer hover:bg-green-600 transition-colors flex items-center justify-center"
+                        className="w-16 h-16 bg-green-500 rounded-full cursor-pointer hover:bg-green-600 transition-colors flex items-center justify-center text-4xl"
                         onClick={handleMouseClick}
                       >
-                        <Mouse className="w-8 h-8 text-white" />
+                        🐭
                       </motion.div>
                     )}
                   </AnimatePresence>

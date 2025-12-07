@@ -89,7 +89,7 @@ export default function VisualPerceptionTrainingPage() {
       icon: '🐭',
       difficulty: '초급',
       duration: '5-10분',
-      color: 'yellow',
+      color: 'mint',
       skills: ['반응 속도', '주의 집중', '인지 처리']
     },
     {
@@ -100,7 +100,7 @@ export default function VisualPerceptionTrainingPage() {
       icon: '🎨',
       difficulty: '초급',
       duration: '5-10분',
-      color: 'yellow',
+      color: 'mint',
       skills: ['색상 인식', '기억력', '시각적 구분']
     },
     {
@@ -111,7 +111,7 @@ export default function VisualPerceptionTrainingPage() {
       icon: '🔲',
       difficulty: '초급',
       duration: '5-10분',
-      color: 'yellow',
+      color: 'mint',
       skills: ['공간 기억', '위치 인식', '시각적 처리']
     },
 

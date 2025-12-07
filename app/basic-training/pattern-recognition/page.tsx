@@ -24,6 +24,7 @@ interface GameState {
   targetColor: string
   colorOptions: ColorItem[]
   showTarget: boolean
+  showOptions: boolean
 }
 
 export default function ColorRecognitionPage() {
@@ -40,7 +41,8 @@ export default function ColorRecognitionPage() {
     startTime: null,
     targetColor: '',
     colorOptions: [],
-    showTarget: false
+    showTarget: false,
+    showOptions: false
   })
 
   const [showInstructions, setShowInstructions] = useState(true)
@@ -122,13 +124,18 @@ export default function ColorRecognitionPage() {
         totalAnswers: 0,
         sessionId: Date.now().toString(),
         startTime: Date.now(),
-        showTarget: true
+        showTarget: true,
+        showOptions: false
       }))
       setShowInstructions(false)
 
       // 3초 후 타겟 숨기기
       setTimeout(() => {
         setGameState(prev => ({ ...prev, showTarget: false }))
+        // 타겟이 사라진 후 1초 후에 선택 보기 표시
+        setTimeout(() => {
+          setGameState(prev => ({ ...prev, showOptions: true }))
+        }, 1000)
       }, 3000)
 
     } catch (error) {
@@ -168,12 +175,17 @@ export default function ColorRecognitionPage() {
       currentLevel: prev.currentLevel + 1,
       targetColor,
       colorOptions,
-      showTarget: true
+      showTarget: true,
+      showOptions: false
     }))
 
     // 3초 후 타겟 숨기기
     setTimeout(() => {
       setGameState(prev => ({ ...prev, showTarget: false }))
+      // 타겟이 사라진 후 1초 후에 선택 보기 표시
+      setTimeout(() => {
+        setGameState(prev => ({ ...prev, showOptions: true }))
+      }, 1000)
     }, 3000)
   }
 
@@ -217,7 +229,8 @@ export default function ColorRecognitionPage() {
       startTime: null,
       targetColor: '',
       colorOptions: [],
-      showTarget: false
+      showTarget: false,
+      showOptions: false
     })
     setShowInstructions(true)
     setSelectedOption(null)
@@ -365,32 +378,34 @@ export default function ColorRecognitionPage() {
             </div>
 
             {/* 색상 선택지 */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 border-4 border-mint-200 relative overflow-hidden">
-              <h4 className="text-lg font-semibold text-gray-700 mb-6">같은 색상을 선택하세요</h4>
-              <div className="grid grid-cols-2 gap-4">
-                {gameState.colorOptions.map((option, index) => (
-                  <motion.button
-                    key={option.id}
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: index * 0.1 }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`w-full h-24 rounded-lg border-4 shadow-lg flex items-center justify-center transition-all duration-200 ${
-                      selectedOption?.id === option.id 
-                        ? 'border-blue-500 ring-4 ring-blue-200' 
-                        : 'border-gray-300 hover:border-mint-400'
-                    }`}
-                    onClick={() => handleOptionClick(option)}
-                  >
-                    <div 
-                      className="w-16 h-16 rounded-full"
-                      style={{ backgroundColor: option.color }}
-                    ></div>
-                  </motion.button>
-                ))}
+            {gameState.showOptions && (
+              <div className="bg-white rounded-2xl shadow-lg p-8 border-4 border-mint-200 relative overflow-hidden">
+                <h4 className="text-lg font-semibold text-gray-700 mb-6">같은 색상을 선택하세요</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  {gameState.colorOptions.map((option, index) => (
+                    <motion.button
+                      key={option.id}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={`w-full h-24 rounded-lg border-4 shadow-lg flex items-center justify-center transition-all duration-200 ${
+                        selectedOption?.id === option.id 
+                          ? 'border-blue-500 ring-4 ring-blue-200' 
+                          : 'border-gray-300 hover:border-mint-400'
+                      }`}
+                      onClick={() => handleOptionClick(option)}
+                    >
+                      <div 
+                        className="w-16 h-16 rounded-full"
+                        style={{ backgroundColor: option.color }}
+                      ></div>
+                    </motion.button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </motion.div>
         )}
 
